@@ -20,3 +20,4 @@
 - 2026-09-02T15:42:33.008Z: Sponsored-Brands created — new document from official Sponsored Brands overview page
 - 2026-09-02T15:42:33.089Z: Reporting-Optimization updated — 1 new fact from Sponsored Brands official source (branded search metrics)
 - 2026-09-02T15:42:33.169Z: ACOS-ROAS-Metrics updated — 2 new facts from Sponsored Brands official source (new-to-brand metrics); confidence raised to High
+- 2026-09-03T11:18:20.886Z: sponsored-products-overview no-change — hash unchanged since last run, skipped extract/validate/merge/publish
