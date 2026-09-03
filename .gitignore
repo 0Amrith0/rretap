@@ -1,0 +1,21 @@
+# Claude Code scratch/working directory
+.tmp/
+
+# Node
+node_modules/
+npm-debug.log*
+
+# Environment / secrets (API keys for GitHub, Tavily/Brave search MCP, etc.)
+.env
+.env.local
+
+# OS noise
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+!.vscode/settings.json
+
+# Logs
+*.log

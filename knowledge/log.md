@@ -1,0 +1,22 @@
+- 2026-09-02T11:43:45.130Z: Sponsored-Products created — end-to-end smoke test, official source only
+- 2026-09-02T11:43:47.490Z: Keyword-Targeting created — end-to-end smoke test, official source only
+- 2026-09-02T11:43:51.210Z: Budget-Placement created — end-to-end smoke test, official source only
+- 2026-09-02T11:43:53.674Z: Bidding-Strategies created — end-to-end smoke test, official source only
+- 2026-09-02T11:43:55.835Z: Reporting-Optimization created — end-to-end smoke test, official source only
+- 2026-09-02T12:04:26.270Z: Sponsored-Products updated — blog corroboration + 7 new facts
+- 2026-09-02T12:04:28.356Z: Campaign-Types created — new document from blog source
+- 2026-09-02T12:04:30.446Z: Match-Types created — new document from blog source
+- 2026-09-02T12:04:32.577Z: Keyword-Targeting updated — 2 new facts from blog source
+- 2026-09-02T12:04:34.521Z: Bidding-Strategies updated — 3 new facts from blog source
+- 2026-09-02T12:04:36.665Z: ACOS-ROAS-Metrics created — new document from blog source
+- 2026-09-02T12:04:38.636Z: Reporting-Optimization updated — 4 new facts from blog source
+- 2026-09-02T12:12:08.956Z: Advertising-API created — new document from stale repo-readme source
+- 2026-09-02T12:12:11.110Z: Campaign-Types updated — 1 new stale fact from repo-readme
+- 2026-09-02T12:12:13.153Z: Match-Types updated — 1 new stale fact from repo-readme
+- 2026-09-02T12:12:15.298Z: Keyword-Targeting updated — 2 new stale facts from repo-readme
+- 2026-09-02T12:12:17.601Z: Bidding-Strategies updated — 2 new stale facts from repo-readme
+- 2026-09-02T12:12:19.684Z: Reporting-Optimization updated — 3 new stale facts from repo-readme
+- 2026-09-02T14:23:55.810Z: Sponsored-Products updated — Helium10 corroboration + 2 new facts (popularity, ranking/ad-spend interplay)
+- 2026-09-02T15:42:33.008Z: Sponsored-Brands created — new document from official Sponsored Brands overview page
+- 2026-09-02T15:42:33.089Z: Reporting-Optimization updated — 1 new fact from Sponsored Brands official source (branded search metrics)
+- 2026-09-02T15:42:33.169Z: ACOS-ROAS-Metrics updated — 2 new facts from Sponsored Brands official source (new-to-brand metrics); confidence raised to High

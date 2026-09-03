@@ -1,0 +1,29 @@
+{
+  "https://advertising.amazon.com/solutions/products/sponsored-products": {
+    "hash": "sha256:5bd3bbf5dfc809adaee1da3812a5eb03dbe44b702937c6e2d3e56bd63df8a786",
+    "last_fetched": "2026-09-02T11:20:13.287Z",
+    "type": "official"
+  },
+  "https://www.junglescout.com/resources/articles/amazon-sponsored-product-ads/": {
+    "hash": "sha256:eef9307a5e95dfc8472c8d6e239f5041cbe3984fe93acf2c16d2e19ce44462ea",
+    "last_fetched": "2026-09-02T11:54:39.406Z",
+    "type": "blog"
+  },
+  "https://github.com/amzn/amazon-advertising-api-php-sdk": {
+    "hash": "sha256:529ba86ef3a95ac40b006bf88eb4a3e838ae14c5a6bdb0bd5705b1688bb5ddc2",
+    "last_fetched": "2026-09-02T12:08:06.735Z",
+    "type": "repo-readme",
+    "last_commit_at": "2019-04-04T19:33:25Z",
+    "stale": true
+  },
+  "https://www.helium10.com/blog/amazon-ppc/sponsored-products/": {
+    "hash": "sha256:9e02cf2fb7d602e6611adda4f02839ca065de49cf051d8cf314e76632df4a06c",
+    "last_fetched": "2026-09-02T14:21:32.699Z",
+    "type": "blog"
+  },
+  "https://advertising.amazon.com/solutions/products/sponsored-brands": {
+    "hash": "sha256:46243a20857826cdf5b4c400a5f44a6465c10e0d90b2d6fe0eed65312c3fbea5",
+    "last_fetched": "2026-09-02T15:36:51.180Z",
+    "type": "official"
+  }
+}
