@@ -35,3 +35,8 @@ type: log
 - 2026-09-07T13:35:50.863Z: amazon-advertising-api-php-sdk-readme no-change — hash unchanged since last run, skipped extract/validate/merge/publish
 - 2026-09-07T13:35:50.894Z: helium10-sponsored-products-guide no-change — hash unchanged since last run, skipped extract/validate/merge/publish
 - 2026-09-07T13:35:50.923Z: sponsored-brands-overview no-change — hash unchanged since last run, skipped extract/validate/merge/publish
+- 2026-09-07T14:53:19.673Z: Sponsored-Display created — Created Sponsored-Display document with 5 new facts about the Sponsored Display to unified display-ads rebrand.
+- 2026-09-07T14:53:40.782Z: Amazon-DSP created — Created Amazon-DSP document with 10 new facts covering DSP overview, targeting, planning tools, buying options, and creative formats.
+- 2026-09-07T14:54:04.777Z: Reporting-Optimization updated — Added 2 new facts about Amazon DSP reporting/measurement to existing document; updated sources and related, rewrote overview.
+- 2026-09-07T14:54:35.632Z: sponsored-display-overview no-change — hash unchanged since last run, skipped extract/validate/merge/publish
+- 2026-09-07T14:54:35.664Z: amazon-dsp-overview no-change — hash unchanged since last run, skipped extract/validate/merge/publish

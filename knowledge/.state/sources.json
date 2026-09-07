@@ -25,5 +25,15 @@
     "hash": "sha256:46243a20857826cdf5b4c400a5f44a6465c10e0d90b2d6fe0eed65312c3fbea5",
     "last_fetched": "2026-09-02T15:36:51.180Z",
     "type": "official"
+  },
+  "https://advertising.amazon.com/solutions/products/sponsored-display": {
+    "hash": "sha256:5081a2829b513fa69e410085cb54d05b5585f0ae9314c1881d815b6a8697950c",
+    "last_fetched": "2026-09-07T14:54:18.344Z",
+    "type": "official"
+  },
+  "https://advertising.amazon.com/solutions/products/amazon-dsp": {
+    "hash": "sha256:2eb7ca49c2f6ee0d65169d107aeb3e218550689ccba6434e952f281f5132f9c5",
+    "last_fetched": "2026-09-07T14:54:18.421Z",
+    "type": "official"
   }
 }
