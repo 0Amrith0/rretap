@@ -1,3 +1,7 @@
+---
+type: log
+---
+
 - 2026-09-02T11:43:45.130Z: Sponsored-Products created — end-to-end smoke test, official source only
 - 2026-09-02T11:43:47.490Z: Keyword-Targeting created — end-to-end smoke test, official source only
 - 2026-09-02T11:43:51.210Z: Budget-Placement created — end-to-end smoke test, official source only
