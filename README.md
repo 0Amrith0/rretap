@@ -51,7 +51,7 @@ Registered sources live in `SOURCES` in `scripts/fetch.js`.
 ## Output
 
 Steady-state output is 10-15 OKF documents in `knowledge/`, one per fixed
-topic key (see the taxonomy in `.claude/skills/okf-format.md`), plus:
+topic key (see the taxonomy in `.claude/skills/okf-format/SKILL.md`), plus:
 
 - `knowledge/index.md` — auto-generated index of all documents.
 - `knowledge/log.md` — append-only run log.
@@ -76,9 +76,9 @@ package.json                     test runner script
     validator.md                 Validate stage (subagent)
     merger.md                    Merge stage (subagent)
   skills/
-    okf-format.md                fixed topic taxonomy, frontmatter/body schema
-    trust-rules.md                confidence scoring, contradiction handling
-    citation-rules.md            per-fact citation format
+    okf-format/SKILL.md          fixed topic taxonomy, frontmatter/body schema
+    trust-rules/SKILL.md         confidence scoring, contradiction handling
+    citation-rules/SKILL.md      per-fact citation format
   settings.json                  registers the pre-write-check hook
 
 scripts/
