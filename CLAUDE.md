@@ -24,8 +24,9 @@ claude -p "ingest <url or 'all'>, update the bundle"
 - **Merge dedup**: multiple sources describing the same concept must
   collapse into a single OKF file, never multiple files for one topic.
 - **Fixed output size**: steady-state output is 10-15 OKF files, achieved
-  via a fixed, predefined topic taxonomy (see `.claude/skills/okf-format.md`)
-  rather than dynamically discovered topics.
+  via a fixed, predefined topic taxonomy (see
+  `.claude/skills/okf-format/SKILL.md`) rather than dynamically discovered
+  topics.
 
 ## The 5-stage pipeline
 
@@ -52,7 +53,7 @@ Only sources whose hash changed proceed to stage 2.
 `.claude/agents/extractor.md` reads a changed source's raw fetched content
 and returns structured facts: `{ topic_key, fact text, source url }`. It
 must classify every fact into one of the fixed topic keys defined in
-`.claude/skills/okf-format.md`, or discard it as out-of-scope. It invokes
+`.claude/skills/okf-format/SKILL.md`, or discard it as out-of-scope. It invokes
 the `okf-format` and `citation-rules` skills.
 
 ### 3. Validate (subagent judgment)
@@ -60,7 +61,7 @@ the `okf-format` and `citation-rules` skills.
 `.claude/agents/validator.md` compares each new fact against the existing
 OKF document (if any) for that topic key: is it new, does it confirm an
 existing fact, or does it contradict one? It assigns a confidence level per
-the tiered rule in `.claude/skills/trust-rules.md` (High/Medium/Low) and
+the tiered rule in `.claude/skills/trust-rules/SKILL.md` (High/Medium/Low) and
 flags unresolved contradictions. It invokes the `trust-rules` and
 `citation-rules` skills.
 
@@ -68,7 +69,7 @@ flags unresolved contradictions. It invokes the `trust-rules` and
 
 `.claude/agents/merger.md` combines facts — old and newly validated — for a
 single topic key into one coherent OKF document body, resolving conflicts
-per `.claude/skills/trust-rules.md` (official source always wins silently;
+per `.claude/skills/trust-rules/SKILL.md` (official source always wins silently;
 non-official-vs-non-official contradictions are marked `disputed: true`
 under a **Disputed** section instead of being guessed away). Because the
 topic key is the merge key, this is what guarantees "duplicates become one
@@ -118,11 +119,11 @@ touch the filesystem for `knowledge/`.
 Shared rules live once in `.claude/skills/` and are invoked by subagents —
 never restated inline in an agent's own instructions:
 
-- **`okf-format.md`** — the fixed topic taxonomy, frontmatter schema,
+- **`okf-format/SKILL.md`** — the fixed topic taxonomy, frontmatter schema,
   section headings, file naming, cross-link conventions.
-- **`trust-rules.md`** — confidence scoring, contradiction handling,
+- **`trust-rules/SKILL.md`** — confidence scoring, contradiction handling,
   repo-staleness cutoff.
-- **`citation-rules.md`** — per-fact citation format (source url,
+- **`citation-rules/SKILL.md`** — per-fact citation format (source url,
   confidence, last-checked date).
 
 ## Build status
