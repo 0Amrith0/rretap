@@ -6,7 +6,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node scripts/hooks/pre-write-check.js"
+            "command": "node \"$CLAUDE_PROJECT_DIR/scripts/hooks/pre-write-check.js\""
           }
         ]
       }
