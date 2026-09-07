@@ -19,7 +19,7 @@
 
 const fs = require("fs");
 const path = require("path");
-const { validate } = require("./validate-schema");
+const { validate, validateMinimal } = require("./validate-schema");
 
 const KNOWLEDGE_DIR = path.join(__dirname, "..", "knowledge");
 const INDEX_PATH = path.join(KNOWLEDGE_DIR, "index.md");
@@ -51,7 +51,7 @@ function rebuildIndex() {
     .filter((f) => f.endsWith(".md") && f !== "index.md" && f !== "log.md")
     .sort();
 
-  const lines = ["# Knowledge Index", ""];
+  const lines = ["---", "type: index", "---", "", "# Knowledge Index", ""];
   for (const file of files) {
     const content = fs.readFileSync(path.join(KNOWLEDGE_DIR, file), "utf8");
     const title = extractFrontmatterField(content, "title") || file;
@@ -64,13 +64,38 @@ function rebuildIndex() {
   }
   lines.push("");
 
-  fs.writeFileSync(INDEX_PATH, lines.join("\n"), "utf8");
+  const content = lines.join("\n");
+  const { valid, errors } = validateMinimal(content);
+  if (!valid) {
+    throw new Error(`[write-okf] BLOCKED: index.md frontmatter invalid: ${errors.join("; ")}`);
+  }
+
+  fs.writeFileSync(INDEX_PATH, content, "utf8");
 }
+
+const LOG_FRONTMATTER = "---\ntype: log\n---\n\n";
 
 function appendLog(topicKey, action, summary) {
   const timestamp = new Date().toISOString();
   const line = `- ${timestamp}: ${topicKey} ${action}${summary ? ` — ${summary}` : ""}\n`;
+
+  if (!fs.existsSync(LOG_PATH)) {
+    fs.writeFileSync(LOG_PATH, LOG_FRONTMATTER, "utf8");
+  } else {
+    const existing = fs.readFileSync(LOG_PATH, "utf8");
+    if (!existing.startsWith("---")) {
+      // Pre-existing log.md predates the type-frontmatter requirement —
+      // migrate it in place by prepending the header, never dropping
+      // history that's already there.
+      fs.writeFileSync(LOG_PATH, LOG_FRONTMATTER + existing, "utf8");
+    }
+  }
   fs.appendFileSync(LOG_PATH, line, "utf8");
+
+  const { valid, errors } = validateMinimal(fs.readFileSync(LOG_PATH, "utf8"));
+  if (!valid) {
+    throw new Error(`[write-okf] BLOCKED: log.md frontmatter invalid: ${errors.join("; ")}`);
+  }
 }
 
 function main() {

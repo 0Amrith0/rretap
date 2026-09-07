@@ -117,6 +117,8 @@ function validate(content) {
 
   const fm = parseFrontmatter(split.yaml);
 
+  if (!fm.type) errors.push("missing required field: type");
+
   if (!fm.title) errors.push("missing required field: title");
 
   if (!fm.topic_key) {
@@ -199,6 +201,30 @@ function validateOkfFile(content) {
   return validate(content);
 }
 
+/**
+ * Lighter check for non-topic OKF files (index.md, log.md): they don't have
+ * a topic_key/sources/body-section shape like a topic document, so the full
+ * validate() doesn't apply. They still must satisfy the one universal OKF
+ * hard rule — frontmatter present, with a non-empty `type`.
+ */
+function validateMinimal(content) {
+  const split = splitFrontmatter(content);
+  if (!split) {
+    return {
+      valid: false,
+      errors: [
+        "missing or malformed frontmatter block (must start with '---' and have a closing '---')",
+      ],
+    };
+  }
+
+  const fm = parseFrontmatter(split.yaml);
+  const errors = [];
+  if (!fm.type) errors.push("missing required field: type");
+
+  return { valid: errors.length === 0, errors };
+}
+
 function main() {
   const filePath = process.argv[2];
   if (!filePath) {
@@ -224,6 +250,7 @@ if (require.main === module) {
 module.exports = {
   validate,
   validateOkfFile,
+  validateMinimal,
   VALID_TOPIC_KEYS,
   VALID_CONFIDENCE,
   VALID_SOURCE_TYPES,
