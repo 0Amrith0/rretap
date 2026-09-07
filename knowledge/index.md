@@ -13,4 +13,4 @@ type: index
 - [Match-Types.md](Match-Types.md) — confidence: Unknown. 
 - [Reporting-Optimization.md](Reporting-Optimization.md) — confidence: Unknown. 
 - [Sponsored-Brands.md](Sponsored-Brands.md) — confidence: Unknown. 
-- [Sponsored-Products.md](Sponsored-Products.md) — confidence: Unknown. 
+- [Sponsored Products](Sponsored-Products.md) — confidence: High. Sponsored Products are cost-per-click (CPC) ads — widely described as Amazon's most popular advertising solution — that promote individual product listings on Amazon's own search results and product pages, and since August 2023 on select premium off-Amazon apps and websites such as Pinterest, BuzzFeed, and Mashable (turned on automatically, with performance visible in the placement report), always while the advertised item is in stock.

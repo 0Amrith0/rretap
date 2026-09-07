@@ -25,3 +25,13 @@ type: log
 - 2026-09-02T15:42:33.089Z: Reporting-Optimization updated — 1 new fact from Sponsored Brands official source (branded search metrics)
 - 2026-09-02T15:42:33.169Z: ACOS-ROAS-Metrics updated — 2 new facts from Sponsored Brands official source (new-to-brand metrics); confidence raised to High
 - 2026-09-03T11:18:20.886Z: sponsored-products-overview no-change — hash unchanged since last run, skipped extract/validate/merge/publish
+- 2026-09-07T13:32:27.945Z: sponsored-products-overview no-change — hash unchanged since last run, skipped extract/validate/merge/publish
+- 2026-09-07T13:32:27.978Z: junglescout-sponsored-products-guide no-change — hash unchanged since last run, skipped extract/validate/merge/publish
+- 2026-09-07T13:32:28.010Z: sponsored-brands-overview no-change — hash unchanged since last run, skipped extract/validate/merge/publish
+- 2026-09-07T13:32:28.043Z: amazon-advertising-api-php-sdk-readme no-change — hash unchanged since last run, skipped extract/validate/merge/publish
+- 2026-09-07T13:34:27.341Z: Sponsored-Products updated — Updated Sponsored-Products.md: confirmed 2 existing facts (refreshed citations from helium10), added 1 new fact about keyword-targeted placement above organic listings.
+- 2026-09-07T13:35:50.804Z: sponsored-products-overview no-change — hash unchanged since last run, skipped extract/validate/merge/publish
+- 2026-09-07T13:35:50.833Z: junglescout-sponsored-products-guide no-change — hash unchanged since last run, skipped extract/validate/merge/publish
+- 2026-09-07T13:35:50.863Z: amazon-advertising-api-php-sdk-readme no-change — hash unchanged since last run, skipped extract/validate/merge/publish
+- 2026-09-07T13:35:50.894Z: helium10-sponsored-products-guide no-change — hash unchanged since last run, skipped extract/validate/merge/publish
+- 2026-09-07T13:35:50.923Z: sponsored-brands-overview no-change — hash unchanged since last run, skipped extract/validate/merge/publish
