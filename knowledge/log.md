@@ -40,3 +40,5 @@ type: log
 - 2026-09-07T14:54:04.777Z: Reporting-Optimization updated — Added 2 new facts about Amazon DSP reporting/measurement to existing document; updated sources and related, rewrote overview.
 - 2026-09-07T14:54:35.632Z: sponsored-display-overview no-change — hash unchanged since last run, skipped extract/validate/merge/publish
 - 2026-09-07T14:54:35.664Z: amazon-dsp-overview no-change — hash unchanged since last run, skipped extract/validate/merge/publish
+- 2026-09-07T15:44:22.876Z: ACOS-ROAS-Metrics updated — Added 5 new ROAS facts from an official Amazon guide, added the new source to frontmatter, and rewrote the Overview to synthesize ACoS, ROAS, and new-to-brand metrics together.
+- 2026-09-07T15:44:54.628Z: roas-guide no-change — hash unchanged since last run, skipped extract/validate/merge/publish
