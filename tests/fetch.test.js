@@ -3,7 +3,7 @@
 const test = require("node:test");
 const assert = require("node:assert/strict");
 
-const { SOURCES, fetchSource } = require("../scripts/fetch");
+const { SOURCES, fetchSource, fetchWithRetry } = require("../scripts/fetch");
 
 // ---- SOURCES registry shape ----
 
@@ -80,6 +80,60 @@ test("fetchSource (http path) throws with status info on a non-ok response", asy
     async () => ({ ok: false, status: 404, statusText: "Not Found", text: async () => "" }),
     async () => {
       await assert.rejects(() => fetchSource(anyHttpSourceId), /404/);
+    }
+  );
+});
+
+// ---- timeout + retry (fetchWithRetry), covering both the http and repo-readme paths ----
+
+test("fetchHttpSource retries once after a transient failure, then succeeds", async () => {
+  const anyHttpSourceId = Object.keys(SOURCES).find(
+    (id) => SOURCES[id].type === "official" || SOURCES[id].type === "blog"
+  );
+
+  let attempts = 0;
+  await withMockedFetch(
+    async () => {
+      attempts++;
+      if (attempts === 1) throw new Error("ECONNRESET");
+      return { ok: true, status: 200, statusText: "OK", text: async () => "recovered body" };
+    },
+    async () => {
+      const result = await fetchSource(anyHttpSourceId);
+      assert.equal(result.body, "recovered body");
+      assert.equal(attempts, 2, "expected exactly one retry after the first failure");
+    }
+  );
+});
+
+test("fetchHttpSource gives up after exhausting retries and throws the underlying error", async () => {
+  const anyHttpSourceId = Object.keys(SOURCES).find(
+    (id) => SOURCES[id].type === "official" || SOURCES[id].type === "blog"
+  );
+
+  let attempts = 0;
+  await withMockedFetch(
+    async () => {
+      attempts++;
+      throw new Error("ECONNRESET");
+    },
+    async () => {
+      await assert.rejects(() => fetchSource(anyHttpSourceId), /ECONNRESET/);
+      assert.equal(attempts, 2, "expected exactly 2 attempts total (1 initial + 1 retry), not an unbounded retry loop");
+    }
+  );
+});
+
+test("fetchWithRetry passes an AbortSignal (timeout) to every fetch call", async () => {
+  let capturedSignal;
+  await withMockedFetch(
+    async (url, opts) => {
+      capturedSignal = opts && opts.signal;
+      return { ok: true, status: 200, statusText: "OK", text: async () => "body" };
+    },
+    async () => {
+      await fetchWithRetry("https://example.invalid/x", {}, "test fetch failed");
+      assert.ok(capturedSignal instanceof AbortSignal, "expected a timeout AbortSignal to be passed to fetch");
     }
   );
 });

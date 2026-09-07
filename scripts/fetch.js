@@ -4,9 +4,12 @@
 /**
  * Discover + Fetch stage (deterministic).
  *
- * Plain HTTP fetch per source. GitHub API / Playwright MCP paths are added
- * when the repo source (step 12) needs them — the blog and official
- * sources added so far are both static enough for plain HTTP.
+ * Plain HTTP fetch for official/blog sources; GitHub REST API for the
+ * repo-readme source. No MCP tooling — every source registered so far is
+ * static enough for a plain request. Every network call goes through
+ * `fetchWithRetry` below: a timeout plus one retry, since a hung
+ * connection or a transient failure (a dropped connection, a momentary
+ * GitHub rate limit) previously killed the whole source on the spot.
  */
 
 const SOURCES = {
@@ -34,18 +37,57 @@ const SOURCES = {
   },
 };
 
-async function fetchHttpSource(source) {
-  const response = await fetch(source.url, {
-    headers: {
-      "User-Agent": "Mozilla/5.0 (compatible; okf-pipeline/0.1; +local-dev)",
-    },
-  });
+const FETCH_TIMEOUT_MS = 10_000;
+const MAX_ATTEMPTS = 2; // 1 initial attempt + 1 retry
+const RETRY_DELAY_MS = 300;
 
-  if (!response.ok) {
-    throw new Error(
-      `Fetch failed for ${source.url}: ${response.status} ${response.statusText}`
-    );
+function delay(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+/**
+ * Wraps a single fetch() call with a timeout (via AbortSignal.timeout, no
+ * extra dependency) and one retry after a short delay — covers both a
+ * hung connection (no timeout previously) and a transient failure like a
+ * dropped connection or a momentary GitHub API rate limit (no retry
+ * previously, so the very first failure killed the whole source).
+ *
+ * `errorPrefix` lets each call site keep its own descriptive error message
+ * (e.g. "GitHub README fetch failed for amzn/repo") rather than a generic
+ * one, since callers/tests key off those specific messages.
+ */
+async function fetchWithRetry(url, options, errorPrefix) {
+  let lastError;
+  for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
+    try {
+      const response = await fetch(url, {
+        ...options,
+        signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
+      });
+      if (!response.ok) {
+        throw new Error(`${errorPrefix}: ${response.status} ${response.statusText}`);
+      }
+      return response;
+    } catch (err) {
+      lastError = err;
+      if (attempt < MAX_ATTEMPTS) {
+        await delay(RETRY_DELAY_MS);
+      }
+    }
   }
+  throw lastError;
+}
+
+async function fetchHttpSource(source) {
+  const response = await fetchWithRetry(
+    source.url,
+    {
+      headers: {
+        "User-Agent": "Mozilla/5.0 (compatible; okf-pipeline/0.1; +local-dev)",
+      },
+    },
+    `Fetch failed for ${source.url}`
+  );
 
   return { body: await response.text() };
 }
@@ -63,40 +105,27 @@ async function fetchRepoReadmeSource(source) {
     Accept: "application/vnd.github+json",
   };
 
-  const readmeResponse = await fetch(
+  const readmeResponse = await fetchWithRetry(
     `https://api.github.com/repos/${source.githubOwner}/${source.githubRepo}/readme`,
-    { headers: { ...headers, Accept: "application/vnd.github.raw+json" } }
+    { headers: { ...headers, Accept: "application/vnd.github.raw+json" } },
+    `GitHub README fetch failed for ${source.githubOwner}/${source.githubRepo}`
   );
-  if (!readmeResponse.ok) {
-    throw new Error(
-      `GitHub README fetch failed for ${source.githubOwner}/${source.githubRepo}: ${readmeResponse.status} ${readmeResponse.statusText}`
-    );
-  }
-  
   const body = await readmeResponse.text();
 
   // First find the README's actual path (commits?path= needs the real
   // filename, which varies in case/extension across repos).
-  const metaResponse = await fetch(
+  const metaResponse = await fetchWithRetry(
     `https://api.github.com/repos/${source.githubOwner}/${source.githubRepo}/readme`,
-    { headers }
+    { headers },
+    `GitHub README metadata fetch failed for ${source.githubOwner}/${source.githubRepo}`
   );
-  if (!metaResponse.ok) {
-    throw new Error(
-      `GitHub README metadata fetch failed for ${source.githubOwner}/${source.githubRepo}: ${metaResponse.status} ${metaResponse.statusText}`
-    );
-  }
   const meta = await metaResponse.json();
 
-  const commitsResponse = await fetch(
+  const commitsResponse = await fetchWithRetry(
     `https://api.github.com/repos/${source.githubOwner}/${source.githubRepo}/commits?path=${encodeURIComponent(meta.path)}&per_page=1`,
-    { headers }
+    { headers },
+    `GitHub commits fetch failed for ${source.githubOwner}/${source.githubRepo}`
   );
-  if (!commitsResponse.ok) {
-    throw new Error(
-      `GitHub commits fetch failed for ${source.githubOwner}/${source.githubRepo}: ${commitsResponse.status} ${commitsResponse.statusText}`
-    );
-  }
   const commits = await commitsResponse.json();
   const lastCommitAt = commits[0]?.commit?.author?.date || null;
 
@@ -142,4 +171,4 @@ if (require.main === module) {
   });
 }
 
-module.exports = { SOURCES, fetchSource };
+module.exports = { SOURCES, fetchSource, fetchWithRetry };
