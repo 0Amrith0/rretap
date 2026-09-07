@@ -14,10 +14,13 @@ const LOG_PATH = path.join(KNOWLEDGE_DIR, "log.md");
 // relative to __dirname, not injectable), so every test here snapshots
 // index.md, log.md, and whichever knowledge/<topic>.md it touches, and
 // restores them exactly in a finally block — including deleting a file that
-// didn't exist before the test created it. Sponsored-Display has no doc yet
-// (verified against knowledge/ before writing this suite), so it's used as
-// the safe "create" target; Budget-Placement's existing doc is used, via a
-// full snapshot/restore, as the safe "update" target.
+// didn't exist before the test created it. All 12 fixed topic keys now have
+// a real published doc (there's no permanently-missing topic to use as a
+// safe "create" target anymore), so the "create" and "invalid write" tests
+// below explicitly delete their target inside the snapshot first — the
+// snapshot/restore machinery still puts the real content back afterward.
+// Budget-Placement's existing doc is used, via a full snapshot/restore, as
+// the safe "update" target.
 
 function runWriteOkf(args) {
   const { spawnSync } = require("child_process");
@@ -90,7 +93,10 @@ Test overview.
 
 test("write-okf creates a new file for a topic that doesn't have one yet, and reports 'created'", () => {
   withKnowledgeSnapshot("Sponsored-Display", (targetPath) => {
-    assert.equal(fs.existsSync(targetPath), false, "precondition: Sponsored-Display.md must not already exist");
+    // Sponsored-Display.md is a real published doc now; delete it inside
+    // the snapshot to simulate "topic has no doc yet" — restored afterward.
+    if (fs.existsSync(targetPath)) fs.unlinkSync(targetPath);
+    assert.equal(fs.existsSync(targetPath), false, "precondition: target must not exist before the create");
 
     const contentFile = writeTempContentFile(okfDoc({ topicKey: "Sponsored-Display" }));
     try {
@@ -180,8 +186,25 @@ test("write-okf treats pure CRLF/LF line-ending drift as unchanged, not as a rea
   });
 });
 
-test("write-okf refuses to write and exits non-zero for a schema-invalid document", () => {
+test("write-okf refuses to write and exits non-zero for a schema-invalid document, leaving an existing target file untouched", () => {
   withKnowledgeSnapshot("Sponsored-Display", (targetPath) => {
+    const before = fs.existsSync(targetPath) ? fs.readFileSync(targetPath, "utf8") : null;
+    const invalid = "---\ntitle: Missing Fields\n---\n\nno sections here\n";
+    const contentFile = writeTempContentFile(invalid);
+    try {
+      const result = runWriteOkf([contentFile]);
+      assert.notEqual(result.code, 0);
+      const after = fs.existsSync(targetPath) ? fs.readFileSync(targetPath, "utf8") : null;
+      assert.equal(after, before, "invalid document must not create, overwrite, or delete the target file");
+    } finally {
+      fs.unlinkSync(contentFile);
+    }
+  });
+});
+
+test("write-okf refuses to write a schema-invalid document when no file exists yet for that topic", () => {
+  withKnowledgeSnapshot("Sponsored-Display", (targetPath) => {
+    if (fs.existsSync(targetPath)) fs.unlinkSync(targetPath);
     const invalid = "---\ntitle: Missing Fields\n---\n\nno sections here\n";
     const contentFile = writeTempContentFile(invalid);
     try {
