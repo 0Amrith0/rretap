@@ -3,7 +3,7 @@
 const test = require("node:test");
 const assert = require("node:assert/strict");
 
-const { validate, VALID_TOPIC_KEYS, VALID_CONFIDENCE, VALID_SOURCE_TYPES } = require("../scripts/validate-schema");
+const { validate, validateMinimal, VALID_TOPIC_KEYS, VALID_CONFIDENCE, VALID_SOURCE_TYPES } = require("../scripts/validate-schema");
 
 function validDoc(overrides = {}) {
   const {
@@ -13,6 +13,7 @@ function validDoc(overrides = {}) {
   } = overrides;
 
   return `---
+type: knowledge-doc
 title: Test Topic
 topic_key: Sponsored-Products
 confidence: High
@@ -187,4 +188,44 @@ test("validate accepts disputed:true with a matching Disputed section", () => {
   });
   const { valid, errors } = validate(content);
   assert.equal(valid, true, JSON.stringify(errors));
+});
+
+// ---- type field (OKF v0.1 hard rule) ----
+
+test("validate rejects a document with no type field", () => {
+  const content = validDoc().replace("type: knowledge-doc\n", "");
+  const { valid, errors } = validate(content);
+  assert.equal(valid, false);
+  assert.ok(errors.some((e) => e.includes("type")));
+});
+
+test("validate rejects an empty type field", () => {
+  const content = validDoc().replace("type: knowledge-doc\n", "type: \n");
+  const { valid, errors } = validate(content);
+  assert.equal(valid, false);
+  assert.ok(errors.some((e) => e.includes("type")));
+});
+
+test("validate accepts a document with a non-empty type field", () => {
+  const { valid, errors } = validate(validDoc());
+  assert.equal(valid, true, JSON.stringify(errors));
+});
+
+// ---- validateMinimal (index.md / log.md style files) ----
+
+test("validateMinimal accepts frontmatter with a non-empty type and no other fields", () => {
+  const content = "---\ntype: index\n---\n\n# Knowledge Index\n";
+  const { valid, errors } = validateMinimal(content);
+  assert.equal(valid, true, JSON.stringify(errors));
+});
+
+test("validateMinimal rejects content with no frontmatter block", () => {
+  const { valid, errors } = validateMinimal("# Knowledge Index\n\nno frontmatter\n");
+  assert.equal(valid, false);
+  assert.match(errors[0], /missing or malformed frontmatter/);
+});
+
+test("validateMinimal rejects frontmatter with a missing or empty type field", () => {
+  assert.equal(validateMinimal("---\ntitle: X\n---\nbody\n").valid, false);
+  assert.equal(validateMinimal("---\ntype: \n---\nbody\n").valid, false);
 });

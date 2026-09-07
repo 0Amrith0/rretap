@@ -27,6 +27,7 @@ function tempFile(content) {
 }
 
 const VALID_OKF = `---
+type: knowledge-doc
 title: Test
 topic_key: Sponsored-Products
 confidence: High

@@ -65,6 +65,7 @@ function writeTempContentFile(content) {
 
 function okfDoc({ topicKey, factLine = "A fact." }) {
   return `---
+type: knowledge-doc
 title: Test Doc
 topic_key: ${topicKey}
 confidence: High
@@ -179,6 +180,37 @@ test("appendLog appends exactly one line with topic, action, and summary", () =>
     appendLog("Sponsored-Products", "updated", "unit test summary line");
     const log = fs.readFileSync(LOG_PATH, "utf8");
     assert.match(log, /Sponsored-Products updated — unit test summary line\n$/);
+  } finally {
+    restore(LOG_PATH, before);
+  }
+});
+
+// ---- type frontmatter on index.md / log.md ----
+
+const { validateMinimal } = require("../scripts/validate-schema");
+
+test("rebuildIndex writes valid frontmatter with type: index at the top of index.md", () => {
+  const before = snapshot(INDEX_PATH);
+  try {
+    rebuildIndex();
+    const index = fs.readFileSync(INDEX_PATH, "utf8");
+    const { valid, errors } = validateMinimal(index);
+    assert.equal(valid, true, JSON.stringify(errors));
+    assert.match(index, /^---\ntype: index\n---\n/);
+  } finally {
+    restore(INDEX_PATH, before);
+  }
+});
+
+test("appendLog keeps log.md valid with type: log frontmatter at the top", () => {
+  const before = snapshot(LOG_PATH);
+  try {
+    appendLog("Sponsored-Products", "updated", "frontmatter stamping test");
+    const log = fs.readFileSync(LOG_PATH, "utf8");
+    const { valid, errors } = validateMinimal(log);
+    assert.equal(valid, true, JSON.stringify(errors));
+    assert.match(log, /^---\ntype: log\n---\n/);
+    assert.match(log, /frontmatter stamping test\n$/);
   } finally {
     restore(LOG_PATH, before);
   }
