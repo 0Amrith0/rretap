@@ -35,6 +35,14 @@ const SOURCES = {
     url: "https://advertising.amazon.com/solutions/products/sponsored-brands",
     type: "official",
   },
+  "sponsored-display-overview": {
+    url: "https://advertising.amazon.com/solutions/products/sponsored-display",
+    type: "official",
+  },
+  "amazon-dsp-overview": {
+    url: "https://advertising.amazon.com/solutions/products/amazon-dsp",
+    type: "official",
+  },
 };
 
 const FETCH_TIMEOUT_MS = 10_000;
