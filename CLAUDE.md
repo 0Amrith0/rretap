@@ -8,10 +8,11 @@ trusted source types into a bundle of OKF (Open Knowledge Format:
 YAML-frontmatter + markdown) documents under `knowledge/`.
 
 No server, no database, no frontend. It runs as CLI-triggered Claude Code
-invocations, e.g.:
+invocations, via the `/ingest` custom command (`.claude/commands/ingest.md`):
 
 ```
-claude -p "ingest <url or 'all'>, update the bundle"
+claude -p "/ingest all"
+claude -p "/ingest <source-id>"
 ```
 
 ## Hard requirements
@@ -28,6 +29,19 @@ claude -p "ingest <url or 'all'>, update the bundle"
   `.claude/skills/okf-format/SKILL.md`) rather than dynamically discovered
   topics.
 
+## Orchestration
+
+None of the 5 stages below sequence themselves — each script/subagent only
+does its own stage when called. `.claude/commands/ingest.md` is what
+sequences them: it's a Claude Code custom command (a prompt, not
+executable code), invoked as `/ingest <source-id>` or `/ingest all`. When
+invoked, the session reading that prompt drives the stages itself — running
+`fetch.js`/`hash.js` via shell commands, invoking the `extractor`,
+`validator`, and `merger` subagents in order, then running `write-okf.js`
+— per source, one at a time. This is also where the hash short-circuit's
+"no change" log line actually gets written (see stage 1 below); no script
+does it on its own.
+
 ## The 5-stage pipeline
 
 ```
@@ -36,14 +50,21 @@ Discover → Extract → Validate → Merge → Publish
 
 ### 1. Discover (deterministic — code, not a subagent)
 
-`scripts/fetch.js` fetches raw content per source (Playwright MCP for
-JS-rendered pages, plain HTTP for static pages, GitHub REST API for the
-Advertising API repo). `scripts/hash.js` computes a content hash per fetched
-page/URL and compares it against `knowledge/.state/sources.json`.
+`scripts/fetch.js` fetches raw content per source: plain HTTP `fetch()` for
+the official-docs and blog sources, the GitHub REST API for the Advertising
+API repo's README (plus the date of its last commit, used by the freshness
+cutoff in `trust-rules`). No MCP tooling is used — every source registered
+so far is static enough for a plain HTTP request; a JS-rendering path would
+only be added if a future source actually needed it. `scripts/hash.js`
+computes a content hash per fetched page/URL and compares it against
+`knowledge/.state/sources.json`.
 
 **If the hash is unchanged since the last run, the source short-circuits
-here** — no extraction, no validation, no merge, no write. One "no change"
-line is appended to `knowledge/log.md` and the pipeline moves to the next
+here**: `hash.js` reports `changed: false` and leaves
+`knowledge/.state/sources.json` untouched — no extraction, no validation,
+no merge, no write. `hash.js` itself doesn't log anything to
+`knowledge/log.md`; the orchestrator (see Orchestration above) appends one
+"no change" line per short-circuited source, then moves to the next
 source. This is what makes re-runs idempotent and cheap.
 
 Only sources whose hash changed proceed to stage 2.
@@ -79,23 +100,27 @@ entry, not multiple files." It invokes the `okf-format`, `trust-rules`, and
 ### 5. Publish (deterministic — code, not a subagent)
 
 `scripts/write-okf.js` writes/updates the final `knowledge/<topic-key>.md`
-file, and updates `knowledge/index.md` and `knowledge/log.md`. Before any
-write under `knowledge/`, a hook registered in `.claude/settings.json` runs
-`scripts/validate-schema.js` to mechanically check required frontmatter
-fields are present and the YAML is well-formed — it **blocks the write** if
-not.
+file, and updates `knowledge/index.md` and `knowledge/log.md`. It validates
+the content itself via `scripts/validate-schema.js` before writing anything
+— this is the primary safety check. A `PreToolUse` hook registered in
+`.claude/settings.json` (`scripts/hooks/pre-write-check.js`) independently
+re-runs that same `validate-schema.js` check on any Bash command that
+invokes `write-okf.js`, as a second, harness-level enforcement layer that
+runs before `write-okf.js` is even allowed to start — it **blocks the
+write** if the content is invalid, at either layer.
 
 ## Stage ownership at a glance
 
 | Stage | Owner | Type |
 |---|---|---|
+| Orchestration (sequences all 5 stages, per source) | `.claude/commands/ingest.md` | prompt-based (Claude Code custom command) |
 | Discover + Fetch | `scripts/fetch.js` | deterministic |
 | Hash + short-circuit | `scripts/hash.js` | deterministic |
 | Extract | `.claude/agents/extractor.md` | subagent (judgment) |
 | Validate | `.claude/agents/validator.md` | subagent (judgment) |
 | Merge | `.claude/agents/merger.md` | subagent (judgment) |
 | Publish (write file, update index/log) | `scripts/write-okf.js` | deterministic |
-| Pre-write schema check | `scripts/validate-schema.js`, invoked by a hook in `.claude/settings.json` | deterministic, blocking |
+| Pre-write schema check | `scripts/write-okf.js` (internal) and `scripts/hooks/pre-write-check.js` (hook, via `.claude/settings.json`) — both call `scripts/validate-schema.js` | deterministic, blocking |
 
 Deterministic code owns everything mechanical: fetching bytes, hashing,
 short-circuiting unchanged sources, writing files, and schema-checking
@@ -128,5 +153,9 @@ never restated inline in an agent's own instructions:
 
 ## Build status
 
-This project is being built incrementally, one component at a time. See the
-build order and verification plan for the current stage.
+This project was built incrementally, one component at a time (see commit
+history for the order). `RUN.md` at the repo root documents a full,
+verified ingestion run against live sources, including the re-run
+idempotency proof. `feedback/` holds the most recent external review;
+outstanding items from it are tracked as normal follow-up work, not in a
+separate build-plan document.

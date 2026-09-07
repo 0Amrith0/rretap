@@ -7,10 +7,11 @@ ACOS/ROAS, etc.) into a fixed-size bundle of OKF (Open Knowledge Format)
 documents under `knowledge/`.
 
 No server, no database, no frontend. It runs as CLI-triggered Claude Code
-invocations:
+invocations, via the `/ingest` custom command:
 
 ```
-claude -p "ingest <url or 'all'>, update the bundle"
+claude -p "/ingest all"
+claude -p "/ingest <source-id>"
 ```
 
 ## Pipeline
@@ -21,6 +22,7 @@ Discover → Extract → Validate → Merge → Publish
 
 | Stage | Owner | Type |
 |---|---|---|
+| Orchestration (sequences all 5 stages) | `.claude/commands/ingest.md` | prompt-based (Claude Code custom command) |
 | Discover + Fetch | `scripts/fetch.js` | deterministic |
 | Hash + short-circuit | `scripts/hash.js` | deterministic |
 | Extract | `.claude/agents/extractor.md` | subagent (judgment) |
@@ -68,9 +70,12 @@ optional `## Disputed` section.
 ```
 CLAUDE.md                        pipeline spec (source of truth)
 README.md                        this file
+RUN.md                            example ingestion run + re-run proof
 package.json                     test runner script
 
 .claude/
+  commands/
+    ingest.md                    Orchestration: sequences all 5 stages (/ingest)
   agents/
     extractor.md                 Extract stage (subagent)
     validator.md                 Validate stage (subagent)
@@ -106,13 +111,15 @@ tests/                           unit tests for scripts/ and scripts/hooks/
 ## Running the pipeline
 
 ```
-claude -p "ingest all, update the bundle"
-claude -p "ingest <url>, update the bundle"
+claude -p "/ingest all"
+claude -p "/ingest <source-id>"
 ```
 
-The given URL must currently match a registered entry in `SOURCES`
-(`scripts/fetch.js`); ingesting an arbitrary unregistered URL isn't
-supported yet.
+`/ingest` is the orchestrator (`.claude/commands/ingest.md`) — a Claude
+Code custom command, not a script, that sequences discover → extract →
+validate → merge → publish per source. The given `<source-id>` must match
+a registered entry in `SOURCES` (`scripts/fetch.js`); ingesting an
+arbitrary unregistered URL isn't supported yet.
 
 ## Testing
 
