@@ -6,7 +6,7 @@
  *
  * Mechanically validates that an OKF document's frontmatter has all
  * required fields, well-formed values, and a body with the required
- * sections, per .claude/skills/okf-format.md. Used both internally by
+ * sections, per .claude/skills/okf-format/SKILL.md. Used both internally by
  * write-okf.js before every write, and independently by the
  * pre-write-check hook (scripts/hooks/pre-write-check.js) registered in
  * .claude/settings.json, as a second, harness-level enforcement layer.
