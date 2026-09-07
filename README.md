@@ -101,11 +101,11 @@ knowledge/                       published OKF bundle (generated)
   .state/sources.json
 
 tests/                           unit tests for scripts/ and scripts/hooks/
-  test.fetch.js
-  test.hash.js
-  test.validate-schema.js
-  test.write-okf.js
-  test.pre-write-check.js
+  fetch.test.js
+  hash.test.js
+  validate-schema.test.js
+  write-okf.test.js
+  pre-write-check.test.js
 ```
 
 ## Running the pipeline
@@ -133,8 +133,18 @@ npm test
 which runs:
 
 ```
-node --test tests/**/*.js
+node --test
 ```
+
+No glob pattern and no explicit `tests/` path — both are avoided
+deliberately. A glob (`tests/**/*.js`) depends on the invoking shell to
+expand `**`, which isn't consistent across shells/OSes and isn't something
+`node --test` itself does on every supported Node version; passing an
+explicit directory path also proved unreliable in practice. `node --test`
+with no arguments recursively discovers every `*.test.js` file from the
+current directory on its own — no shell involvement, works the same on any
+Node ≥18 — which is why every test file here is named `<name>.test.js`
+rather than `test.<name>.js`.
 
 Tests that exercise real file I/O (`check`/`commit` in `hash.js`,
 `write-okf.js`, the pre-write hook) snapshot whatever they touch —

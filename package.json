@@ -1,7 +1,10 @@
 {
   "name": "amazon-ads-okf-pipeline",
   "private": true,
+  "engines": {
+    "node": ">=18"
+  },
   "scripts": {
-    "test": "node --test tests/**/*.js"
+    "test": "node --test"
   }
 }
