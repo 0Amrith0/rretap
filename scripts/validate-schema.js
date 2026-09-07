@@ -39,7 +39,19 @@ const VALID_CONFIDENCE = ["High", "Medium", "Low"];
 const VALID_SOURCE_TYPES = ["official", "blog", "repo-readme"];
 const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
 
-function splitFrontmatter(content) {
+/**
+ * A checkout with git's core.autocrlf enabled converts committed LF files
+ * to CRLF on disk. Every regex below matches literal "\n" — normalize
+ * first so a file's line-ending style (an artifact of how it was checked
+ * out, not a real content difference) never causes a false "invalid"
+ * verdict.
+ */
+function normalizeNewlines(content) {
+  return content.replace(/\r\n/g, "\n");
+}
+
+function splitFrontmatter(rawContent) {
+  const content = normalizeNewlines(rawContent);
   const match = content.match(/^---\n([\s\S]*?)\n---\n?([\s\S]*)$/);
   if (!match) return null;
   return { yaml: match[1], body: match[2] };
@@ -251,6 +263,7 @@ module.exports = {
   validate,
   validateOkfFile,
   validateMinimal,
+  normalizeNewlines,
   VALID_TOPIC_KEYS,
   VALID_CONFIDENCE,
   VALID_SOURCE_TYPES,

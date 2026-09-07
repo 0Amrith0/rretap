@@ -19,7 +19,7 @@
 
 const fs = require("fs");
 const path = require("path");
-const { validate, validateMinimal } = require("./validate-schema");
+const { validate, validateMinimal, normalizeNewlines } = require("./validate-schema");
 
 const KNOWLEDGE_DIR = path.join(__dirname, "..", "knowledge");
 const INDEX_PATH = path.join(KNOWLEDGE_DIR, "index.md");
@@ -53,7 +53,12 @@ function rebuildIndex() {
 
   const lines = ["---", "type: index", "---", "", "# Knowledge Index", ""];
   for (const file of files) {
-    const content = fs.readFileSync(path.join(KNOWLEDGE_DIR, file), "utf8");
+    // Normalize CRLF->LF before parsing: a checkout with git's core.autocrlf
+    // enabled can leave an unrelated file's line endings as CRLF even
+    // though nothing about its actual content changed. Without this, the
+    // frontmatter/overview regexes below silently fail to match on any
+    // such file, and its index entry falls back to "Unknown"/blank.
+    const content = normalizeNewlines(fs.readFileSync(path.join(KNOWLEDGE_DIR, file), "utf8"));
     const title = extractFrontmatterField(content, "title") || file;
     const confidence = extractFrontmatterField(content, "confidence") || "Unknown";
     const overviewMatch = content.match(/## Overview\n\n([\s\S]*?)\n\n##/);
@@ -141,7 +146,6 @@ function main() {
   // raw bytes would then log a false "updated" for pure line-ending
   // drift — exactly the kind of unnecessary write this check exists to
   // prevent.
-  const normalizeNewlines = (s) => s.replace(/\r\n/g, "\n");
   const isUnchanged =
     existingContent !== null &&
     normalizeNewlines(existingContent) === normalizeNewlines(content);
