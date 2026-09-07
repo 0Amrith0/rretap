@@ -130,7 +130,34 @@ function main() {
   fs.mkdirSync(KNOWLEDGE_DIR, { recursive: true });
 
   const targetPath = path.join(KNOWLEDGE_DIR, `${topicKey}.md`);
-  const action = fs.existsSync(targetPath) ? "updated" : "created";
+  const existingContent = fs.existsSync(targetPath)
+    ? fs.readFileSync(targetPath, "utf8")
+    : null;
+
+  // Normalize CRLF->LF before comparing: on a checkout with git's
+  // core.autocrlf enabled, an on-disk file can carry CRLF line endings
+  // while freshly generated content (from the merger, always LF) does
+  // not, even when nothing about the actual content changed. Comparing
+  // raw bytes would then log a false "updated" for pure line-ending
+  // drift — exactly the kind of unnecessary write this check exists to
+  // prevent.
+  const normalizeNewlines = (s) => s.replace(/\r\n/g, "\n");
+  const isUnchanged =
+    existingContent !== null &&
+    normalizeNewlines(existingContent) === normalizeNewlines(content);
+
+  if (isUnchanged) {
+    // Byte-identical to what's already published: the merger produced no
+    // real change for this topic key. Per CLAUDE.md's "zero unnecessary
+    // edits/writes" hard requirement, skip the write, the index rebuild,
+    // and the log line entirely — none of them would reflect an actual
+    // change, and logging "updated" here would be a lie the next reader
+    // has no way to detect.
+    console.error(`[write-okf] no-op: knowledge/${topicKey}.md unchanged, nothing to write`);
+    return;
+  }
+
+  const action = existingContent === null ? "created" : "updated";
 
   fs.writeFileSync(targetPath, content, "utf8");
 

@@ -133,6 +133,53 @@ test("write-okf updates an existing file in place and reports 'updated'", () => 
   });
 });
 
+test("write-okf is a no-op — skips write, index rebuild, and log line — when content is unchanged from what's already published", () => {
+  withKnowledgeSnapshot("Budget-Placement", (targetPath) => {
+    const content = okfDoc({ topicKey: "Budget-Placement", factLine: "A stable fact for the no-op test." });
+    const contentFile = writeTempContentFile(content);
+    try {
+      const baseline = runWriteOkf([contentFile, "--summary", "baseline for no-op test"]);
+      assert.equal(baseline.code, 0, baseline.stderr);
+
+      const indexBefore = fs.readFileSync(INDEX_PATH, "utf8");
+      const logBefore = fs.readFileSync(LOG_PATH, "utf8");
+
+      const result = runWriteOkf([contentFile, "--summary", "should never appear"]);
+      assert.equal(result.code, 0, result.stderr);
+      assert.match(result.stderr || "", /no-op: knowledge\/Budget-Placement\.md unchanged/);
+      assert.doesNotMatch(result.stderr || "", /updated knowledge\/Budget-Placement\.md/);
+
+      assert.equal(fs.readFileSync(INDEX_PATH, "utf8"), indexBefore, "index.md must not be rewritten");
+      assert.equal(fs.readFileSync(LOG_PATH, "utf8"), logBefore, "log.md must not gain a spurious 'updated' line");
+    } finally {
+      fs.unlinkSync(contentFile);
+    }
+  });
+});
+
+test("write-okf treats pure CRLF/LF line-ending drift as unchanged, not as a real update", () => {
+  withKnowledgeSnapshot("Budget-Placement", (targetPath) => {
+    const content = okfDoc({ topicKey: "Budget-Placement", factLine: "A stable fact for the CRLF-drift test." });
+    const contentFile = writeTempContentFile(content);
+    try {
+      const baseline = runWriteOkf([contentFile, "--summary", "baseline for CRLF-drift test"]);
+      assert.equal(baseline.code, 0, baseline.stderr);
+
+      // Simulate a checkout with core.autocrlf converting the published
+      // file to CRLF, with no actual content change.
+      const crlfOnDisk = content.replace(/\n/g, "\r\n");
+      fs.writeFileSync(targetPath, crlfOnDisk, "utf8");
+
+      const result = runWriteOkf([contentFile, "--summary", "should never appear"]);
+      assert.equal(result.code, 0, result.stderr);
+      assert.match(result.stderr || "", /no-op: knowledge\/Budget-Placement\.md unchanged/);
+      assert.doesNotMatch(result.stderr || "", /updated knowledge\/Budget-Placement\.md/);
+    } finally {
+      fs.unlinkSync(contentFile);
+    }
+  });
+});
+
 test("write-okf refuses to write and exits non-zero for a schema-invalid document", () => {
   withKnowledgeSnapshot("Sponsored-Display", (targetPath) => {
     const invalid = "---\ntitle: Missing Fields\n---\n\nno sections here\n";
