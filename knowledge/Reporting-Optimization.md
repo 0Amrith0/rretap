@@ -1,4 +1,5 @@
 ---
+type: knowledge-doc
 title: Reporting Optimization
 topic_key: Reporting-Optimization
 confidence: High

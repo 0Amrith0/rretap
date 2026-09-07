@@ -1,4 +1,5 @@
 ---
+type: knowledge-doc
 title: Match Types
 topic_key: Match-Types
 confidence: Medium

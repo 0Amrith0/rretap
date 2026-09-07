@@ -1,4 +1,5 @@
 ---
+type: knowledge-doc
 title: Sponsored Products
 topic_key: Sponsored-Products
 confidence: High

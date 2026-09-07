@@ -1,4 +1,5 @@
 ---
+type: knowledge-doc
 title: ACOS ROAS Metrics
 topic_key: ACOS-ROAS-Metrics
 confidence: High

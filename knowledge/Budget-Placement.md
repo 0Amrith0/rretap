@@ -1,4 +1,5 @@
 ---
+type: knowledge-doc
 title: Budget Placement
 topic_key: Budget-Placement
 confidence: High

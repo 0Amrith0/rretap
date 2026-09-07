@@ -1,4 +1,5 @@
 ---
+type: knowledge-doc
 title: Sponsored Brands
 topic_key: Sponsored-Brands
 confidence: High

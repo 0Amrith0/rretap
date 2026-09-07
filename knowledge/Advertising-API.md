@@ -1,4 +1,5 @@
 ---
+type: knowledge-doc
 title: Advertising API
 topic_key: Advertising-API
 confidence: Low

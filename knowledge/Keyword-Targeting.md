@@ -1,4 +1,5 @@
 ---
+type: knowledge-doc
 title: Keyword Targeting
 topic_key: Keyword-Targeting
 confidence: High

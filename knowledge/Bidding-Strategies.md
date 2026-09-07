@@ -1,4 +1,5 @@
 ---
+type: knowledge-doc
 title: Bidding Strategies
 topic_key: Bidding-Strategies
 confidence: High

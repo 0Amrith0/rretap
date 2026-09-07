@@ -1,4 +1,5 @@
 ---
+type: knowledge-doc
 title: Campaign Types
 topic_key: Campaign-Types
 confidence: Medium
