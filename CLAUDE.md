@@ -57,15 +57,24 @@ cutoff in `trust-rules`). No MCP tooling is used — every source registered
 so far is static enough for a plain HTTP request; a JS-rendering path would
 only be added if a future source actually needed it. `scripts/hash.js`
 computes a content hash per fetched page/URL and compares it against
-`knowledge/.state/sources.json`.
+`knowledge/.state/sources.json` — but does not itself decide when to
+persist a new hash; see below.
 
 **If the hash is unchanged since the last run, the source short-circuits
-here**: `hash.js` reports `changed: false` and leaves
+here**: `hash.js`'s `check()` reports `changed: false` and leaves
 `knowledge/.state/sources.json` untouched — no extraction, no validation,
 no merge, no write. `hash.js` itself doesn't log anything to
 `knowledge/log.md`; the orchestrator (see Orchestration above) appends one
 "no change" line per short-circuited source, then moves to the next
 source. This is what makes re-runs idempotent and cheap.
+
+**If the hash changed**, `check()` still does not write state — the new
+hash is only persisted via a separate `hash.js --commit` call, and only
+after extract/validate/merge/publish have all completed successfully for
+that source (or extraction legitimately found nothing to publish). This
+split exists so a crash or failure partway through doesn't leave state
+claiming unpublished content was already handled — a failed run gets
+retried next time instead of silently losing the update.
 
 Only sources whose hash changed proceed to stage 2.
 

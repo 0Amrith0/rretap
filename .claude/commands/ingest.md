@@ -56,15 +56,19 @@ clean up this source's scratch subdirectory, and move on to the next
 source. Do not let one source's fetch failure stop the whole run when
 processing `all`.
 
-### 2. Hash + short-circuit (deterministic)
+### 2. Hash + short-circuit (deterministic — read-only)
 
 Run:
 ```
 node scripts/hash.js <source-id> [--last-commit-at <value>] < <scratch>/body.txt > <scratch>/hash.json
 ```
-(include `--last-commit-at` only when step 1 found one). Read
+(include `--last-commit-at` only when step 1 found one). This is `hash.js`'s
+`check()` path — it compares the hash but **never writes**
+`knowledge/.state/sources.json`, even when the hash changed. Read
 `<scratch>/hash.json` — it's a single JSON object:
 `{ sourceId, url, type, changed, hash, previousHash, stale, lastCommitAt }`.
+Keep the `hash` value — you'll need it later to commit state, but only
+once this source's content has actually been fully processed (steps 3-6).
 
 **If `changed` is `false`:** this is the short-circuit. Per `CLAUDE.md`,
 append exactly one "no-change" line to `knowledge/log.md` — this is the
@@ -76,11 +80,16 @@ log line style (see other lines in `knowledge/log.md`), e.g.:
 ```
 Append it directly with a shell command (this is a single fixed-format
 line, not a schema-validated document write, so it does not go through
-`write-okf.js`). Clean up this source's scratch subdirectory and move to
-the next source. **Do not invoke extractor, validator, or merger for this
-source.**
+`write-okf.js`). No commit is needed — state already correctly reflects
+this hash from a prior run. Clean up this source's scratch subdirectory
+and move to the next source. **Do not invoke extractor, validator, or
+merger for this source.**
 
-**If `changed` is `true`:** continue to step 3.
+**If `changed` is `true`:** continue to step 3. **Do not commit the new
+hash yet** — state must stay at the old hash until this source's content
+has been fully and successfully processed, so that a failure anywhere in
+steps 3-6 leaves this source correctly re-detected as changed on the next
+run, instead of silently marking unpublished content as handled.
 
 ### 3. Extract (subagent judgment)
 
@@ -94,12 +103,19 @@ session) with:
 It returns a JSON array of facts (see `.claude/agents/extractor.md` for
 the exact shape). If it returns malformed output (not valid JSON, or not
 an array), treat this source as failed: report the error, clean up scratch,
-move on — do not attempt to repair or reinterpret its output yourself.
+move on — **do not commit** (state stays at the old hash, so this source
+is correctly retried from scratch next run).
 
-If the array is empty: this source yielded no facts. Append a note to your
-run summary, clean up scratch, move to the next source (state was already
-updated by hash.js in step 2, so a future run won't re-extract this exact
-content).
+If the array is empty: this source yielded no facts, but it *was* fully
+and successfully processed — nothing publishable doesn't mean nothing
+happened. Commit now, so a future run doesn't keep re-fetching and
+re-extracting this same unchanged content forever:
+```
+node scripts/hash.js --commit <source-id> <hash> [--last-commit-at <value>]
+```
+(the `<hash>` and optional `--last-commit-at` value are from step 2's
+`hash.json`). Append a note to your run summary, clean up scratch, move to
+the next source.
 
 ### 4. Validate (subagent judgment)
 
@@ -111,7 +127,7 @@ Invoke the `validator` subagent with:
 
 It returns a JSON array, one entry per input fact, each carrying `status`
 and `confidence` (see `.claude/agents/validator.md`). Same malformed-output
-handling as step 3.
+handling as step 3 (report, clean up, **do not commit**, move on).
 
 ### 5. Merge (subagent judgment)
 
@@ -122,7 +138,9 @@ once with:
 - `today`: today's date (`YYYY-MM-DD`)
 
 It returns a JSON array of `{ topic_key, content, summary }`, one entry per
-topic key actually touched this run (see `.claude/agents/merger.md`).
+topic key actually touched this run (see `.claude/agents/merger.md`). If
+this returns malformed output, same handling as step 3: report, clean up,
+**do not commit**, move on.
 
 ### 6. Publish (deterministic, one call per topic key)
 
@@ -142,8 +160,20 @@ For each `{ topic_key, content, summary }` entry from step 5:
 regeneration, and the `knowledge/log.md` created/updated line itself — do
 not duplicate any of that here.
 
+**Once every topic key from step 5 has been attempted:** if all of them
+published successfully (no schema-validation failures), commit this
+source's new hash now — this is the point where the content has actually,
+fully landed in `knowledge/`:
+```
+node scripts/hash.js --commit <source-id> <hash> [--last-commit-at <value>]
+```
+If **any** topic key failed to publish, **do not commit** — leave state at
+the old hash so this entire source (not just the failed topic key) is
+retried from step 3 on the next run, since a partial publish means this
+source's content hasn't been fully and correctly captured yet.
+
 Clean up this source's scratch subdirectory once all its topic keys are
-processed.
+processed (and the commit decision above has been made).
 
 ## After all sources
 
@@ -151,12 +181,12 @@ Print a short summary: for each source id, one line stating short-circuit
 (no-change) / created N files / updated N files / failed at stage X, so
 whoever ran this command can see the outcome of the whole run at a glance.
 
-## Known limitation (do not attempt to fix here)
+## Why hash state is committed late, not at step 2
 
-`scripts/hash.js` writes its updated hash to
-`knowledge/.state/sources.json` as soon as step 2 runs — before extract,
-validate, merge, or publish for that source complete. If this command is
-interrupted between step 2 and step 6 for a source, that source's state
-will already say "handled" even though nothing was published. This is a
-known, separate defect (tracked outside this command) — do not work around
-it by reordering `hash.js`'s own writes from inside this command.
+`scripts/hash.js` splits detection (`check`, step 2) from persistence
+(`commit`, called only from step 3's empty-facts branch or the end of step
+6). This is deliberate: if this command is interrupted anywhere between
+step 2 and step 6 for a source, state is left at the *old* hash, so the
+next run correctly re-detects that source as changed and retries it from
+scratch — instead of silently marking unpublished content as "already
+handled" forever. Never call `--commit` earlier than described above.

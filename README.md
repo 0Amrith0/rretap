@@ -136,7 +136,7 @@ which runs:
 node --test tests/**/*.js
 ```
 
-Tests that exercise real file I/O (`checkAndUpdate` in `hash.js`,
+Tests that exercise real file I/O (`check`/`commit` in `hash.js`,
 `write-okf.js`, the pre-write hook) snapshot whatever they touch —
 `knowledge/.state/sources.json`, `knowledge/index.md`, `knowledge/log.md`,
 individual `knowledge/<topic>.md` files — before running and restore it

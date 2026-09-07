@@ -8,7 +8,8 @@ const {
   normalizeForHashing,
   hashContent,
   isStale,
-  checkAndUpdate,
+  check,
+  commit,
   readState,
   STATE_PATH,
 } = require("../scripts/hash");
@@ -89,7 +90,7 @@ test("isStale returns false for a commit just inside the 6-month cutoff", () => 
   assert.equal(isStale(withinCutoff.toISOString()), false);
 });
 
-// ---- checkAndUpdate ----
+// ---- check / commit ----
 // These exercise real file I/O against the project's live
 // knowledge/.state/sources.json, so every test snapshots the file first and
 // restores it exactly afterwards (and never touches a real source id/url —
@@ -110,58 +111,104 @@ function withTempSource(fn) {
     if (hadStateFile) {
       fs.writeFileSync(STATE_PATH, originalState, "utf8");
     } else if (fs.existsSync(STATE_PATH)) {
-      // checkAndUpdate created the state file where none existed before.
+      // commit() created the state file where none existed before.
       fs.unlinkSync(STATE_PATH);
     }
   }
 }
 
-test("checkAndUpdate throws on an unknown source id", () => {
-  assert.throws(() => checkAndUpdate("__not_a_real_source__", "body"), /Unknown source id/);
+test("check throws on an unknown source id", () => {
+  assert.throws(() => check("__not_a_real_source__", "body"), /Unknown source id/);
 });
 
-test("checkAndUpdate reports changed:true and persists state on first sight", () => {
+test("commit throws on an unknown source id", () => {
+  assert.throws(() => commit("__not_a_real_source__", "sha256:abc"), /Unknown source id/);
+});
+
+test("check never writes state, even when changed:true (first sight)", () => {
   withTempSource((tempId) => {
-    const result = checkAndUpdate(tempId, "<p>first version</p>");
+    const hadStateFile = fs.existsSync(STATE_PATH);
+    const result = check(tempId, "<p>first version</p>");
     assert.equal(result.changed, true);
     assert.equal(result.previousHash, null);
     assert.match(result.hash, /^sha256:/);
 
-    const state = readState();
-    assert.equal(state[SOURCES[tempId].url].hash, result.hash);
+    // check() must not have created the state file (or touched it if it
+    // already existed) — only commit() is allowed to write.
+    assert.equal(fs.existsSync(STATE_PATH), hadStateFile);
   });
 });
 
-test("checkAndUpdate reports changed:false and does not rewrite state for identical content", () => {
+test("commit persists the hash so a later check reports changed:false", () => {
   withTempSource((tempId) => {
-    checkAndUpdate(tempId, "<p>same content</p>");
+    const checked = check(tempId, "<p>version A</p>");
+    assert.equal(checked.changed, true);
+
+    commit(tempId, checked.hash);
+    const state = readState();
+    assert.equal(state[SOURCES[tempId].url].hash, checked.hash);
+
+    const rechecked = check(tempId, "<p>version A</p>");
+    assert.equal(rechecked.changed, false);
+    assert.equal(rechecked.previousHash, checked.hash);
+  });
+});
+
+test("check reports changed:false for identical content once committed, and does not rewrite state", () => {
+  withTempSource((tempId) => {
+    const first = check(tempId, "<p>same content</p>");
+    commit(tempId, first.hash);
     const beforeMtime = fs.statSync(STATE_PATH).mtimeMs;
 
-    const result = checkAndUpdate(tempId, "<p>same    content</p>"); // whitespace-only diff
+    const result = check(tempId, "<p>same    content</p>"); // whitespace-only diff
     assert.equal(result.changed, false);
     assert.equal(result.hash, result.previousHash);
 
     const afterMtime = fs.statSync(STATE_PATH).mtimeMs;
-    assert.equal(afterMtime, beforeMtime, "state file must not be rewritten on an unchanged hash");
+    assert.equal(afterMtime, beforeMtime, "check() must never rewrite state");
   });
 });
 
-test("checkAndUpdate reports changed:true when content actually differs, and updates the hash", () => {
+test("check reports changed:true when content actually differs from the last committed hash", () => {
   withTempSource((tempId) => {
-    const first = checkAndUpdate(tempId, "<p>version A</p>");
-    const second = checkAndUpdate(tempId, "<p>version B</p>");
+    const first = check(tempId, "<p>version A</p>");
+    commit(tempId, first.hash);
+
+    const second = check(tempId, "<p>version B</p>");
     assert.equal(second.changed, true);
     assert.equal(second.previousHash, first.hash);
     assert.notEqual(second.hash, first.hash);
   });
 });
 
-test("checkAndUpdate marks stale:true and records last_commit_at for an old repo-readme commit", () => {
+test("a crash between check and commit leaves state unchanged, so the next check still reports changed:true", () => {
+  withTempSource((tempId) => {
+    const first = check(tempId, "<p>version A</p>");
+    commit(tempId, first.hash);
+
+    // Simulate detecting a change but never reaching commit (e.g. publish
+    // failed) — deliberately do not call commit() here.
+    const detected = check(tempId, "<p>version B</p>");
+    assert.equal(detected.changed, true);
+
+    // A subsequent run re-checks the same still-uncommitted content and
+    // must still see it as changed, so it gets retried rather than
+    // silently lost.
+    const retried = check(tempId, "<p>version B</p>");
+    assert.equal(retried.changed, true);
+    assert.equal(retried.previousHash, first.hash);
+  });
+});
+
+test("commit marks stale:true and records last_commit_at for an old repo-readme commit", () => {
   withTempSource((tempId) => {
     SOURCES[tempId].type = "repo-readme";
     const old = new Date();
     old.setFullYear(old.getFullYear() - 2);
-    const result = checkAndUpdate(tempId, "<p>readme</p>", { lastCommitAt: old.toISOString() });
+    const checked = check(tempId, "<p>readme</p>", { lastCommitAt: old.toISOString() });
+    assert.equal(checked.stale, true);
+
+    const result = commit(tempId, checked.hash, { lastCommitAt: old.toISOString() });
     assert.equal(result.stale, true);
 
     const state = readState();

@@ -4,17 +4,28 @@
 /**
  * Hash + short-circuit stage (deterministic).
  *
- * Step 7 scope: wired to the official-docs source only (via fetch.js's
- * SOURCES map). Reads fetched body from stdin, computes its content hash,
- * and compares it against knowledge/.state/sources.json.
+ * Two-mode CLI, backed by two separate functions — deliberately not one
+ * atomic read-and-write:
  *
- * If the hash is unchanged since the last run: prints changed=false and
- * does NOT touch the state file at all (no unnecessary writes). This is
- * the short-circuit signal — the caller (pipeline orchestrator) must stop
- * here for this source and skip extract/validate/merge/publish.
+ *   node hash.js <source-id> [--last-commit-at <v>] < body   → check()
+ *     Reads fetched body from stdin, computes its content hash, compares
+ *     it against knowledge/.state/sources.json. NEVER writes state, even
+ *     when changed:true. Prints the comparison result as JSON.
  *
- * If the hash changed (or this source has never been seen before): prints
- * changed=true and updates the state file with the new hash.
+ *   node hash.js --commit <source-id> <hash> [--last-commit-at <v>]  → commit()
+ *     Persists <hash> to knowledge/.state/sources.json for <source-id>.
+ *     The caller (the /ingest orchestrator) must only run this AFTER
+ *     extract/validate/merge/publish have all completed successfully for
+ *     that source's changed content (or after extraction legitimately
+ *     found zero facts) — never right after check() reports changed:true.
+ *     Writing state that early would let a crash or failure between
+ *     detection and publish silently mark unpublished content as "already
+ *     handled" forever; deferring the write means a failed run just gets
+ *     retried on the next `/ingest`.
+ *
+ * If the hash is unchanged since the last run: check() prints changed=false
+ * and touches nothing. This is the short-circuit signal — the caller must
+ * stop here for this source and skip extract/validate/merge/publish.
  *
  * IMPORTANT: raw fetched HTML from live pages (this one included) embeds
  * per-request volatile data — session ids, request ids, CSRF-style hidden
@@ -97,6 +108,10 @@ function isStale(lastCommitAt) {
 }
 
 /**
+ * Read-only: computes the hash and compares it against recorded state, but
+ * never writes anything. Deliberately does not persist a "changed" result
+ * itself — see `commit()` below for why.
+ *
  * @param {string} sourceId
  * @param {string} body - raw fetched content for this source
  * @param {{lastCommitAt?: string|null}} [options] - repo-readme sources
@@ -104,7 +119,7 @@ function isStale(lastCommitAt) {
  *   used for the trust-rules freshness cutoff.
  * @returns {{sourceId: string, url: string, type: string, changed: boolean, hash: string, previousHash: string|null, stale: boolean, lastCommitAt: string|null}}
  */
-function checkAndUpdate(sourceId, body, options = {}) {
+function check(sourceId, body, options = {}) {
   const source = SOURCES[sourceId];
   if (!source) {
     throw new Error(`Unknown source id: ${sourceId}`);
@@ -118,16 +133,6 @@ function checkAndUpdate(sourceId, body, options = {}) {
   const lastCommitAt = options.lastCommitAt || null;
   const stale = isStale(lastCommitAt);
 
-  if (changed) {
-    state[source.url] = {
-      hash,
-      last_fetched: new Date().toISOString(),
-      type: source.type,
-      ...(lastCommitAt ? { last_commit_at: lastCommitAt, stale } : {}),
-    };
-    writeState(state);
-  }
-
   return {
     sourceId,
     url: source.url,
@@ -138,6 +143,45 @@ function checkAndUpdate(sourceId, body, options = {}) {
     stale,
     lastCommitAt,
   };
+}
+
+/**
+ * Persists a source's new hash to knowledge/.state/sources.json.
+ *
+ * Deliberately a separate step from `check()`, not folded back into one
+ * atomic operation: the caller (the /ingest orchestrator) must only call
+ * this AFTER extract/validate/merge/publish have all completed
+ * successfully for this source's changed content (or after extract
+ * legitimately found zero facts to publish). If state were written the
+ * moment a change was detected — the old behavior — a crash or failure
+ * anywhere between detection and publish would leave state claiming this
+ * content was already handled, silently losing that update forever on
+ * every future run. Committing late means a failed run just gets retried
+ * next time instead.
+ *
+ * @param {string} sourceId
+ * @param {string} hash - the hash from a prior `check()` call for this source
+ * @param {{lastCommitAt?: string|null}} [options]
+ */
+function commit(sourceId, hash, options = {}) {
+  const source = SOURCES[sourceId];
+  if (!source) {
+    throw new Error(`Unknown source id: ${sourceId}`);
+  }
+
+  const state = readState();
+  const lastCommitAt = options.lastCommitAt || null;
+  const stale = isStale(lastCommitAt);
+
+  state[source.url] = {
+    hash,
+    last_fetched: new Date().toISOString(),
+    type: source.type,
+    ...(lastCommitAt ? { last_commit_at: lastCommitAt, stale } : {}),
+  };
+  writeState(state);
+
+  return { sourceId, url: source.url, hash, stale, lastCommitAt };
 }
 
 function readStdin() {
@@ -152,6 +196,27 @@ function readStdin() {
 
 async function main() {
   const args = process.argv.slice(2);
+
+  if (args[0] === "--commit") {
+    const sourceId = args[1];
+    const hash = args[2];
+    const lastCommitAtIdx = args.indexOf("--last-commit-at");
+    const lastCommitAt = lastCommitAtIdx !== -1 ? args[lastCommitAtIdx + 1] : null;
+
+    if (!sourceId || !hash) {
+      console.error(
+        "[hash] usage: node hash.js --commit <source-id> <hash> [--last-commit-at <value>]"
+      );
+      process.exitCode = 1;
+      return;
+    }
+
+    const result = commit(sourceId, hash, { lastCommitAt });
+    console.error(`[hash] committed sourceId=${result.sourceId} hash=${result.hash}`);
+    process.stdout.write(JSON.stringify(result));
+    return;
+  }
+
   const lastCommitAtIdx = args.indexOf("--last-commit-at");
   const lastCommitAt =
     lastCommitAtIdx !== -1 ? args[lastCommitAtIdx + 1] : null;
@@ -160,11 +225,11 @@ async function main() {
     "sponsored-products-overview";
 
   const body = await readStdin();
-  const result = checkAndUpdate(sourceId, body, { lastCommitAt });
+  const result = check(sourceId, body, { lastCommitAt });
 
   if (result.changed) {
     console.error(
-      `[hash] sourceId=${result.sourceId} CHANGED (previous=${result.previousHash || "none"} new=${result.hash})${result.stale ? " [STALE repo-readme]" : ""} — proceed to extract`
+      `[hash] sourceId=${result.sourceId} CHANGED (previous=${result.previousHash || "none"} new=${result.hash})${result.stale ? " [STALE repo-readme]" : ""} — proceed to extract; commit only after publish succeeds`
     );
   } else {
     console.error(
@@ -183,7 +248,8 @@ if (require.main === module) {
 }
 
 module.exports = {
-  checkAndUpdate,
+  check,
+  commit,
   hashContent,
   normalizeForHashing,
   isStale,
