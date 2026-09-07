@@ -103,7 +103,7 @@ function appendLog(topicKey, action, summary) {
   }
 }
 
-function main() {
+async function main() {
   const { positional, summary } = parseArgs(process.argv.slice(2));
   const contentFile = positional[0];
 
@@ -172,7 +172,10 @@ function main() {
 }
 
 if (require.main === module) {
-  main();
+  main().catch((err) => {
+    console.error(`[write-okf] error: ${err.message}`);
+    process.exitCode = 1;
+  });
 }
 
 module.exports = { main, rebuildIndex, appendLog };

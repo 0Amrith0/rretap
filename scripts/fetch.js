@@ -43,6 +43,10 @@ const SOURCES = {
     url: "https://advertising.amazon.com/solutions/products/amazon-dsp",
     type: "official",
   },
+  "roas-guide": {
+    url: "https://advertising.amazon.com/library/guides/return-on-ad-spend-roas",
+    type: "official",
+  },
 };
 
 const FETCH_TIMEOUT_MS = 10_000;
