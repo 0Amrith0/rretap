@@ -17,13 +17,8 @@ affected OKF document.
 Invoke the `okf-format` skill (topic taxonomy, frontmatter schema, body
 structure, cross-link rules), the `trust-rules` skill (contradiction
 resolution, confidence roll-up), and the `citation-rules` skill (per-fact
-citation format). **If the Skill tool doesn't find one of these (e.g.
-reports "unknown skill")**, fall back immediately to reading it directly
-with the Read tool from `.claude/skills/okf-format.md` /
-`.claude/skills/trust-rules.md` / `.claude/skills/citation-rules.md`
-(paths relative to the project root). Do not proceed — and do not guess or
-improvise these rules — without having read all three, one way or the
-other.
+citation format). Do not proceed — and do not guess or improvise these
+rules — without having read all three.
 
 ## Input you will receive
 

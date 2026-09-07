@@ -14,12 +14,8 @@ currently published and assign each one a confidence and a status.
 
 Invoke the `trust-rules` skill for the trust ranking, confidence tiers,
 freshness cutoff, and contradiction rules, and the `citation-rules` skill
-for citation field requirements. **If the Skill tool doesn't find one of
-these (e.g. reports "unknown skill")**, fall back immediately to reading
-it directly with the Read tool from `.claude/skills/trust-rules.md` /
-`.claude/skills/citation-rules.md` (paths relative to the project root).
-Do not proceed — and do not guess or improvise these rules — without
-having read both, one way or the other.
+for citation field requirements. Do not proceed — and do not guess or
+improvise these rules — without having read both.
 
 ## Input you will receive
 

@@ -14,12 +14,8 @@ read raw fetched content you are given, and return structured facts.
 
 Invoke the `okf-format` skill to get the fixed topic taxonomy (the only 12
 valid `topic_key` values) and the `citation-rules` skill to get the
-citation fields you must attach to every fact. **If the Skill tool doesn't
-find one of these (e.g. reports "unknown skill")**, fall back immediately
-to reading it directly with the Read tool from
-`.claude/skills/okf-format.md` / `.claude/skills/citation-rules.md` (paths
-relative to the project root). Do not proceed — and do not guess or
-improvise the taxonomy — without having read both, one way or the other.
+citation fields you must attach to every fact. Do not proceed — and do not
+guess or improvise the taxonomy — without having read both.
 
 ## Input you will receive
 
