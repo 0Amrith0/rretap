@@ -51,6 +51,7 @@ Required fields, in this order:
 
 ```yaml
 ---
+type: knowledge-doc
 title: Sponsored Products
 topic_key: Sponsored-Products
 confidence: High        # High | Medium | Low — see trust-rules skill
@@ -66,6 +67,13 @@ disputed: false
 
 Field rules:
 
+- `type` — always the literal string `knowledge-doc` for a topic document.
+  This is the one universal OKF hard rule: every `.md` file under
+  `knowledge/` must have a non-empty `type` in its frontmatter, so a reader
+  (or the validator) can tell what kind of file it is without parsing the
+  body. `index.md` and `log.md` use `type: index` / `type: log` instead —
+  see `scripts/write-okf.js`, which generates and validates those two files
+  directly rather than through this skill.
 - `title` — human-readable name (matches the topic key's natural English
   phrasing, e.g. `Sponsored-Products` → "Sponsored Products").
 - `topic_key` — must be exactly one of the 12 keys above.
