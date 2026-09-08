@@ -3,7 +3,7 @@ type: knowledge-doc
 title: Budget Placement
 topic_key: Budget-Placement
 confidence: High
-last_updated: 2026-09-02
+last_updated: 2026-09-08
 sources:
   - url: https://advertising.amazon.com/solutions/products/sponsored-products
     type: official
@@ -14,7 +14,7 @@ disputed: false
 
 ## Overview
 
-Sponsored Products ads can appear both on the Amazon store (at the top of, alongside, or within shopping results, and on product pages) and beyond Amazon on other Amazon-owned and third-party destinations, across desktop, mobile, and tablet. Advertisers control spend with a daily budget representing what they're willing to spend on a campaign over a calendar month; because daily budgets are not paced throughout the day, a small budget can be exhausted within minutes under high shopper interest. Total campaign cost will never exceed the set daily budget for the campaign's duration, and advertisers can raise or lower that budget after the campaign goes live.
+[Sponsored Products](Sponsored-Products.md) ads can appear both on the Amazon store (at the top of, alongside, or within shopping results, and on product pages) and beyond Amazon on other Amazon-owned and third-party destinations, across desktop, mobile, and tablet. Advertisers control spend with a daily budget representing what they're willing to spend on a campaign over a calendar month; because daily budgets are not paced throughout the day, a small budget can be exhausted within minutes under high shopper interest. Total campaign cost will never exceed the set daily budget for the campaign's duration, and advertisers can raise or lower that budget after the campaign goes live.
 
 ## Facts
 

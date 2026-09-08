@@ -3,7 +3,7 @@ type: knowledge-doc
 title: Advertising API
 topic_key: Advertising-API
 confidence: Low
-last_updated: 2026-09-02
+last_updated: 2026-09-08
 sources:
   - url: https://github.com/amzn/amazon-advertising-api-php-sdk
     type: repo-readme
@@ -14,7 +14,7 @@ disputed: false
 
 ## Overview
 
-The Amazon Advertising API lets developers manage advertiser accounts (profiles) and campaign entities programmatically. Each profile represents an advertiser account and carries attributes such as countryCode, currencyCode, dailyBudget, timezone, and marketplace/seller identifiers. For testing, the API's sandbox environment supports profile registration across a set of country codes including the US, Canada, UK, Germany, France, Spain, Italy, India, China, and Japan.
+The Amazon Advertising API lets developers manage advertiser accounts (profiles) and campaign entities programmatically. Each profile represents an advertiser account and carries attributes such as countryCode, currencyCode, dailyBudget, timezone, and marketplace/seller identifiers. For testing, the API's sandbox environment supports profile registration across a set of country codes including the US, Canada, UK, Germany, France, Spain, Italy, India, China, and Japan. This API is what powers programmatic access to [campaign types](Campaign-Types.md), [match types](Match-Types.md), [keyword targeting](Keyword-Targeting.md), [bidding strategies](Bidding-Strategies.md), and [reporting](Reporting-Optimization.md) described in their own documents.
 
 ## Facts
 

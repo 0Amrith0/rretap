@@ -3,7 +3,7 @@ type: knowledge-doc
 title: Sponsored Brands
 topic_key: Sponsored-Brands
 confidence: High
-last_updated: 2026-09-02
+last_updated: 2026-09-08
 sources:
   - url: https://advertising.amazon.com/solutions/products/sponsored-brands
     type: official
@@ -14,7 +14,7 @@ disputed: false
 
 ## Overview
 
-Sponsored Brands is an Amazon advertising solution that helps customers discover a brand within the Amazon store using rich video, image, and collection creatives, appearing in prominent placements such as top of search, product pages, and the Amazon home page on both desktop and mobile. It supports multiple pricing models — cost-per-click, viewable cost-per-thousand-impressions, and fixed upfront reserve share of voice for guaranteed Top-of-Search placement on branded keywords — with no minimum spend for CPC or vCPM campaigns. It is available to vendors, book vendors, KDP authors (including single-book authors), agencies, and Brand Registry-enrolled professional sellers, subject to category and product eligibility restrictions, with submitted ads reviewed within 72 hours. Recent enhancements include single-book author support and two new worldwide audiences for bid adjustment to re-engage past purchasers and cart-adders.
+Sponsored Brands is an Amazon advertising solution that helps customers discover a brand within the Amazon store using rich video, image, and collection creatives, appearing in prominent placements such as top of search, product pages, and the Amazon home page on both desktop and mobile. It supports multiple pricing models — cost-per-click, viewable cost-per-thousand-impressions, and fixed upfront reserve share of voice for guaranteed Top-of-Search placement on branded keywords — with no minimum spend for CPC or vCPM campaigns. It is available to vendors, book vendors, KDP authors (including single-book authors), agencies, and Brand Registry-enrolled professional sellers, subject to category and product eligibility restrictions, with submitted ads reviewed within 72 hours. Recent enhancements include single-book author support and two new worldwide audiences for bid adjustment to re-engage past purchasers and cart-adders. Sponsored Brands sits alongside [Sponsored Products](Sponsored-Products.md) among Amazon's ad types, and uses the same underlying [campaign setup](Campaign-Types.md), [bidding](Bidding-Strategies.md), and [budget/placement](Budget-Placement.md) mechanics described in their own documents.
 
 ## Facts
 

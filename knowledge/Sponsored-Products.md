@@ -3,7 +3,7 @@ type: knowledge-doc
 title: Sponsored Products
 topic_key: Sponsored-Products
 confidence: High
-last_updated: 2026-09-07
+last_updated: 2026-09-08
 sources:
   - url: https://advertising.amazon.com/solutions/products/sponsored-products
     type: official
@@ -20,7 +20,7 @@ disputed: false
 
 ## Overview
 
-Sponsored Products are cost-per-click (CPC) ads — widely described as Amazon's most popular advertising solution — that promote individual product listings on Amazon's own search results and product pages, and since August 2023 on select premium off-Amazon apps and websites such as Pinterest, BuzzFeed, and Mashable (turned on automatically, with performance visible in the placement report), always while the advertised item is in stock. These ads are keyword-targeted and appear on the product search results page above non-sponsored organic product listings, helping sellers gain highly visible placements on Amazon. Unlike Sponsored Brands and Sponsored Display, sellers do not need to be Brand Registered to run Sponsored Products, and a customer is charged the seller's bid amount on click regardless of whether a purchase follows. The program is open to professional sellers, vendors, book vendors, KDP authors, and agencies (excluding adult, used, refurbished, and closed-category products), offers automatic and manual targeting, and lets sellers extend automatic targeting campaigns to other Amazon marketplaces with Amazon converting budgets and suggesting bids. Because ad spend can influence a product's visibility on Amazon, its resulting sales and ranking performance can reflect paid advertising effort as well as organic SEO performance.
+Sponsored Products are cost-per-click (CPC) ads — widely described as Amazon's most popular advertising solution — that promote individual product listings on Amazon's own search results and product pages, and since August 2023 on select premium off-Amazon apps and websites such as Pinterest, BuzzFeed, and Mashable (turned on automatically, with performance visible in the placement report), always while the advertised item is in stock. These ads are [keyword-targeted](Keyword-Targeting.md) and appear on the product search results page above non-sponsored organic product listings, helping sellers gain highly visible placements on Amazon. Unlike Sponsored Brands and Sponsored Display, sellers do not need to be Brand Registered to run Sponsored Products, and a customer is charged the seller's [bid](Bidding-Strategies.md) amount on click regardless of whether a purchase follows. The program is open to professional sellers, vendors, book vendors, KDP authors, and agencies (excluding adult, used, refurbished, and closed-category products), offers automatic and manual targeting, and lets sellers extend automatic targeting campaigns to other Amazon marketplaces with Amazon converting [budgets](Budget-Placement.md) and suggesting bids. Because ad spend can influence a product's visibility on Amazon, its resulting sales and ranking performance can reflect paid advertising effort as well as organic SEO performance. Performance is tracked and optimized as described in [Reporting Optimization](Reporting-Optimization.md), using the [ACOS/ROAS](ACOS-ROAS-Metrics.md) metrics, with campaigns set up as one of the [campaign types](Campaign-Types.md) and a choice of [match types](Match-Types.md) for manual targeting.
 
 ## Facts
 

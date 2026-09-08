@@ -3,7 +3,7 @@ type: knowledge-doc
 title: Reporting Optimization
 topic_key: Reporting-Optimization
 confidence: High
-last_updated: 2026-09-07
+last_updated: 2026-09-08
 sources:
   - url: https://advertising.amazon.com/solutions/products/sponsored-products
     type: official
@@ -26,7 +26,7 @@ disputed: false
 
 ## Overview
 
-Once a Sponsored Products campaign is live, advertisers can generate reports on sales, product/target performance, and placement performance. For automatic targeting campaigns, the search terms tab shows clicks, spend, sales, and ACoS per term, helping sellers spot poor performers (e.g., roughly 10 clicks with no sales) to add as negative keywords and strong performers to promote into manual campaigns; manual campaign optimization involves lowering or pausing bids on keywords with high ACoS or high clicks/impressions but low sales, and raising bids on underexposed but relevant or low-ACoS keywords. It's recommended to let a new campaign run at least two weeks before making optimization changes, so Amazon can gather sufficient performance data. Sponsored Brands reporting also includes branded search metrics, which reveal when ads prompt shoppers to search for brand names, trademarks, or common variations like abbreviations. At the API level, performance reports (covering metrics like impressions, clicks, and cost) and entity snapshots are both generated asynchronously and retrieved separately once processing completes. Amazon DSP campaign reporting adds industry-standard and Amazon-proprietary metrics (detail page view rate, add-to-list, new-to-brand, reach, frequency, viewability), plus omnichannel measurement solutions like Omnichannel Metrics, Marketing Mix Modeling, and custom event-level analytics via Amazon Marketing Cloud.
+Once a [Sponsored Products](Sponsored-Products.md) campaign is live, advertisers can generate reports on sales, product/target performance, and placement performance. For automatic targeting campaigns, the search terms tab shows clicks, spend, sales, and ACoS per term, helping sellers spot poor performers (e.g., roughly 10 clicks with no sales) to add as negative keywords and strong performers to promote into manual campaigns; manual campaign optimization involves lowering or pausing [bids](Bidding-Strategies.md) on keywords with high ACoS or high clicks/impressions but low sales, and raising bids on underexposed but relevant or low-ACoS keywords. It's recommended to let a new campaign run at least two weeks before making optimization changes, so Amazon can gather sufficient performance data. [Sponsored Brands](Sponsored-Brands.md) reporting also includes branded search metrics, which reveal when ads prompt shoppers to search for brand names, trademarks, or common variations like abbreviations. At the [Advertising API](Advertising-API.md) level, performance reports (covering metrics like impressions, clicks, and cost) and entity snapshots are both generated asynchronously and retrieved separately once processing completes. [Amazon DSP](Amazon-DSP.md) campaign reporting adds industry-standard and Amazon-proprietary metrics (detail page view rate, add-to-list, new-to-brand, reach, frequency, viewability), plus omnichannel measurement solutions like Omnichannel Metrics, Marketing Mix Modeling, and custom event-level analytics via Amazon Marketing Cloud. These figures feed directly into the [ACOS/ROAS](ACOS-ROAS-Metrics.md) metrics and [keyword targeting](Keyword-Targeting.md) decisions covered elsewhere.
 
 ## Facts
 

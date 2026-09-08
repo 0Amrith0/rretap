@@ -3,7 +3,7 @@ type: knowledge-doc
 title: Amazon DSP
 topic_key: Amazon-DSP
 confidence: High
-last_updated: 2026-09-07
+last_updated: 2026-09-08
 sources:
   - url: https://advertising.amazon.com/solutions/products/sponsored-display
     type: official
@@ -17,7 +17,7 @@ disputed: false
 
 ## Overview
 
-Amazon DSP is an omnichannel demand-side platform that lets advertisers programmatically buy audio, display, online video, Streaming TV, and physical store advertising, using Amazon's first-party data and AI-powered automation to target audiences even without third-party cookies. It's available to brand advertisers, agencies, and tool providers, whether or not they sell on Amazon, via self-service or a managed-service option (typically requiring a $50,000 USD minimum spend), and offers audience targeting across Amazon, advertiser, and third-party data sources. Amazon has also introduced a centralized hub unifying access to all Amazon Ads products, bringing sponsored ads and Amazon DSP workflows into a single workspace, and DSP includes integrated media planning tools, multiple programmatic buying options, and standard plus exclusive Amazon creative formats.
+Amazon DSP is an omnichannel demand-side platform that lets advertisers programmatically buy audio, display, online video, Streaming TV, and physical store advertising, using Amazon's first-party data and AI-powered automation to target audiences even without third-party cookies. It's available to brand advertisers, agencies, and tool providers, whether or not they sell on Amazon, via self-service or a managed-service option (typically requiring a $50,000 USD minimum spend), and offers audience targeting across Amazon, advertiser, and third-party data sources. Amazon has also introduced a centralized hub unifying access to all Amazon Ads products, bringing sponsored ads and Amazon DSP workflows into a single workspace, and DSP includes integrated media planning tools, multiple programmatic buying options, and standard plus exclusive Amazon creative formats. DSP campaigns are measured through the same reporting tools covered in [Reporting Optimization](Reporting-Optimization.md), follow [budget and placement](Budget-Placement.md) mechanics similar to Sponsored ad types, and sit alongside [Sponsored Display](Sponsored-Display.md) within Amazon's unified display ads offering.
 
 ## Facts
 

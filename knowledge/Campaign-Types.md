@@ -3,7 +3,7 @@ type: knowledge-doc
 title: Campaign Types
 topic_key: Campaign-Types
 confidence: Medium
-last_updated: 2026-09-02
+last_updated: 2026-09-08
 sources:
   - url: https://www.junglescout.com/resources/articles/amazon-sponsored-product-ads/
     type: blog
@@ -17,7 +17,7 @@ disputed: false
 
 ## Overview
 
-Sponsored Products campaigns support two targeting approaches: automatic targeting, where Amazon selects keywords or products based on listing information, and manual targeting, where the seller chooses specific keywords or products and sets custom bids. Campaigns are created in Seller Central under Advertising > Campaign Manager > Create Campaign, with setup covering the campaign name, date range, an optional portfolio, daily budget, bidding strategy, keywords, and targeting type. At the API level, campaigns are represented with a campaignType field (e.g. 'sponsoredProducts') and a targetingType field (e.g. 'manual'), alongside name, dailyBudget, startDate, and state.
+[Sponsored Products](Sponsored-Products.md) campaigns support two targeting approaches: automatic targeting, where Amazon selects keywords or products based on listing information, and manual targeting, where the seller chooses specific keywords or products and sets custom bids. Campaigns are created in Seller Central under Advertising > Campaign Manager > Create Campaign, with setup covering the campaign name, date range, an optional portfolio, daily budget, bidding strategy, keywords, and targeting type. At the [Advertising API](Advertising-API.md) level, campaigns are represented with a campaignType field (e.g. 'sponsoredProducts') and a targetingType field (e.g. 'manual'), alongside name, dailyBudget, startDate, and state. These two targeting approaches connect directly to [keyword targeting](Keyword-Targeting.md) and the available [match types](Match-Types.md) for manual campaigns.
 
 ## Facts
 

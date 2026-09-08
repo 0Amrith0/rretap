@@ -3,7 +3,7 @@ type: knowledge-doc
 title: Bidding Strategies
 topic_key: Bidding-Strategies
 confidence: High
-last_updated: 2026-09-02
+last_updated: 2026-09-08
 sources:
   - url: https://advertising.amazon.com/solutions/products/sponsored-products
     type: official
@@ -20,7 +20,7 @@ disputed: false
 
 ## Overview
 
-Sponsored Products campaigns have no monthly or upfront fees; advertisers instead enter a bid representing the maximum they are willing to pay per click, with more competitive bids increasing the likelihood of the ad being shown. In an auction, the actual amount charged depends on competing bids and may be less than the full bid (e.g., the second-highest bid). Sellers can choose from three bidding strategies — dynamic bid-down only, dynamic bid-up and down (up to 100% higher for likely-to-convert clicks), or fixed bids — and can further adjust bids by ad placement. The Advertising API also offers bid recommendations for an ad group or individual keyword, including a suggested bid and a recommended range, and can return bulk bid suggestions for up to 100 keywords per request.
+[Sponsored Products](Sponsored-Products.md) campaigns have no monthly or upfront fees; advertisers instead enter a bid representing the maximum they are willing to pay per click, with more competitive bids increasing the likelihood of the ad being shown. In an auction, the actual amount charged depends on competing bids and may be less than the full bid (e.g., the second-highest bid). Sellers can choose from three bidding strategies — dynamic bid-down only, dynamic bid-up and down (up to 100% higher for likely-to-convert clicks), or fixed bids — and can further adjust bids by ad placement. The [Advertising API](Advertising-API.md) also offers bid recommendations for an ad group or individual keyword, including a suggested bid and a recommended range, and can return bulk bid suggestions for up to 100 keywords per request. Bids also interact directly with a campaign's [budget and placement](Budget-Placement.md) choices.
 
 ## Facts
 

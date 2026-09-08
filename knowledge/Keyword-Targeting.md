@@ -3,7 +3,7 @@ type: knowledge-doc
 title: Keyword Targeting
 topic_key: Keyword-Targeting
 confidence: High
-last_updated: 2026-09-02
+last_updated: 2026-09-08
 sources:
   - url: https://advertising.amazon.com/solutions/products/sponsored-products
     type: official
@@ -20,7 +20,7 @@ disputed: false
 
 ## Overview
 
-For Sponsored Products campaigns, advertisers can either let Amazon's automatic targeting select relevant keywords for them or choose keywords manually. In manual campaigns, keyword targeting is used when the seller knows the specific search terms customers use, while product targeting lets them target competitor ASINs, categories, brands, or other product features; negative keywords let sellers exclude non-converting or irrelevant search terms so their ad stops appearing for those searches and they avoid paying for non-performing clicks. At the API level, negative keywords can be applied either at the ad group level or the campaign level (with campaign-level negatives only removable, not otherwise updatable), and the API can generate keyword suggestions for an ad group or a product ASIN, optionally including suggested bids.
+For [Sponsored Products](Sponsored-Products.md) campaigns, advertisers can either let Amazon's automatic targeting select relevant keywords for them or choose keywords manually. In manual campaigns, keyword targeting is used when the seller knows the specific search terms customers use, while product targeting lets them target competitor ASINs, categories, brands, or other product features; negative keywords let sellers exclude non-converting or irrelevant search terms so their ad stops appearing for those searches and they avoid paying for non-performing clicks. At the [Advertising API](Advertising-API.md) level, negative keywords can be applied either at the ad group level or the campaign level (with campaign-level negatives only removable, not otherwise updatable), and the API can generate keyword suggestions for an ad group or a product ASIN, optionally including suggested bids. Keyword targeting works together with the [match types](Match-Types.md) available in each of the manual [campaign types](Campaign-Types.md).
 
 ## Facts
 

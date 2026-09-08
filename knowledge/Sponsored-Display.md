@@ -3,7 +3,7 @@ type: knowledge-doc
 title: Sponsored Display
 topic_key: Sponsored-Display
 confidence: High
-last_updated: 2026-09-07
+last_updated: 2026-09-08
 sources:
   - url: https://advertising.amazon.com/solutions/products/sponsored-display
     type: official
@@ -14,7 +14,7 @@ disputed: false
 
 ## Overview
 
-Sponsored Display has been rebranded and folded into Amazon Ads' broader "display ads" offering, which unifies what was previously split between Sponsored Display, Amazon DSP, and the Ads Console. The unified platform connects advertiser campaigns with customers across Amazon-owned properties like Twitch, Fire TV, and Echo Show, as well as premium placements across the open internet, using either Amazon-generated creative or the advertiser's own assets. Existing Sponsored Display campaigns continue running uninterrupted and remain accessible through Campaign Manager in the Ads Console, and new display campaigns are now created via "Campaigns" > "Create Campaign" > "Display" in the current interface.
+Sponsored Display has been rebranded and folded into Amazon Ads' broader "display ads" offering, which unifies what was previously split between Sponsored Display, [Amazon DSP](Amazon-DSP.md), and the Ads Console. The unified platform connects advertiser campaigns with customers across Amazon-owned properties like Twitch, Fire TV, and Echo Show, as well as premium placements across the open internet, using either Amazon-generated creative or the advertiser's own assets. Existing Sponsored Display campaigns continue running uninterrupted and remain accessible through Campaign Manager in the Ads Console, and new display campaigns are now created via "Campaigns" > "Create Campaign" > "Display" in the current interface. New display campaigns are created the same way as the other [campaign types](Campaign-Types.md), and follow similar [budget and placement](Budget-Placement.md) rules to Sponsored Products.
 
 ## Facts
 
