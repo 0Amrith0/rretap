@@ -153,3 +153,7 @@ individual `knowledge/<topic>.md` files — before running and restore it
 exactly afterward, so running the suite never leaves the real knowledge
 bundle changed. Network calls (GitHub API, HTTP fetch) are mocked via
 `global.fetch`, never made for real.
+
+A GitHub Actions workflow (`.github/workflows/ci.yml`) runs `npm test` on
+every push and pull request, across Node 18.x and 20.x to match the
+`engines` field in `package.json`.
